@@ -1,4 +1,4 @@
-﻿"""HTTP backend for Discord Course Assistant.
+"""HTTP backend for Discord Course Assistant.
 
 No external dependency required. It serves:
 - backend API under /api/*
@@ -9,7 +9,9 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
@@ -115,6 +117,38 @@ class ApiHandler(SimpleHTTPRequestHandler):
             return self._send_json({"error": str(exc)}, status=500)
 
 
+def start_background_bots() -> None:
+    # 1. Start Telegram Bot if configured in .env
+    try:
+        from telegram_bot import TelegramBotListener
+        tb = TelegramBotListener()
+        if tb.enabled:
+            t_tg = threading.Thread(target=tb.run, daemon=True)
+            t_tg.start()
+            print("[App Launcher] Telegram Bot listener started in background thread.")
+        else:
+            print("[App Launcher] Telegram Bot: Set TELEGRAM_BOT_TOKEN in .env to enable Telegram Bot & Q&A.")
+    except Exception as exc:
+        print(f"[App Launcher] Could not start Telegram Bot: {exc}")
+
+    # 2. Start Discord Bot if configured in .env
+    try:
+        import discord_bot
+        token = os.getenv("DISCORD_BOT_TOKEN", "").strip()
+        if token:
+            def _run_discord() -> None:
+                try:
+                    bot = discord_bot.create_bot()
+                    bot.run(token)
+                except Exception as e:
+                    print(f"[App Launcher] Discord Bot exited: {e}")
+            t_disc = threading.Thread(target=_run_discord, daemon=True)
+            t_disc.start()
+            print("[App Launcher] Discord Bot crawler started in background thread.")
+    except Exception as exc:
+        print(f"[App Launcher] Could not start Discord Bot: {exc}")
+
+
 def main() -> None:
     refresh = "--refresh" in sys.argv
     use_llm = "--llm" in sys.argv
@@ -127,8 +161,11 @@ def main() -> None:
     print(f"Backend API + frontend serving: http://localhost:{port}")
     print(f"Frontend dir: {FRONTEND_DIR}")
     print("APIs: /api/structured, /api/crawler/status, /api/search?q=deadline, /api/qa?q=deadline gần nhất")
+    
+    start_background_bots()
     ThreadingHTTPServer(("", port), ApiHandler).serve_forever()
 
 
 if __name__ == "__main__":
     main()
+

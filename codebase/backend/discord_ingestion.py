@@ -25,13 +25,25 @@ from agents import (
 RELEVANCE_TERMS = tuple(normalize_text(term) for term in (
     "announcement", "deadline", "due", "assignment", "quiz", "workshop",
     "thông báo", "hạn", "nộp bài", "bài tập", "tài liệu", "slide", "lịch học",
-    "meeting", "lớp học", "nộp", "submission",
+    "meeting", "lớp học", "nộp", "submission", "lab", "đồ án", "project",
+    "đề bài", "tài nguyên", "link", "zoom", "hỏi", "thắc mắc", "lỗi", "giúp",
+    "báo cáo", "bài giảng", "transcript", "điểm danh", "thi", "nhắc nhở",
+    "gia hạn", "drive", "form", "sheet", "code", "repo", "github", "vlearn",
+    "tutor", "học viên", "giảng viên", "ta", "bài làm", "kênh", "tiến độ",
+    "thời gian", "lớp", "buổi", "thứ", "chủ nhật", "hạn cuối", "nộp muộn",
+    "trước", "quá hạn", "online", "offline", "meet", "lịch"
 ))
 DEADLINE_TERMS = tuple(normalize_text(term) for term in (
     "deadline", "due", "assignment", "quiz", "hạn", "nộp bài", "bài tập", "submission",
+    "hạn cuối", "nộp", "bài lab", "lab", "đồ án", "báo cáo", "gia hạn", "trước", "nộp muộn", "quá hạn", "extended"
 ))
-MEETING_TERMS = tuple(normalize_text(term) for term in ("meeting", "workshop", "lịch học", "buổi học", "zoom"))
-QUESTION_TERMS = ("?", "ai biết", "cho hỏi", "làm sao", "như nào")
+MEETING_TERMS = tuple(normalize_text(term) for term in (
+    "meeting", "workshop", "lịch học", "buổi học", "zoom", "google meet", "online", "offline", "thời gian học", "lớp học"
+))
+QUESTION_TERMS = (
+    "?", "ai biết", "cho hỏi", "làm sao", "như nào", "cho em hỏi", "cho mình hỏi",
+    "thắc mắc", "mọi người ơi", "lỗi", "giúp em", "giúp mình", "sao ạ", "được không", "đâu"
+)
 URL_PATTERN = re.compile(r"https?://[^\s<>()]+", re.IGNORECASE)
 _RUNTIME_LOCK = threading.RLock()
 
@@ -75,10 +87,10 @@ def _classify(content: str, channel: str, attachments: List[Dict[str, Any]], lin
         return "deadline"
     if any(term in text for term in MEETING_TERMS):
         return "meeting"
-    if attachments or links:
-        return "document"
     if "?" in content or any(term in text for term in QUESTION_TERMS):
         return "question"
+    if attachments or links:
+        return "document"
     if any(term in text for term in RELEVANCE_TERMS):
         return "announcement"
     return "message"
@@ -120,12 +132,25 @@ def is_relevant_course_message(raw_message: Mapping[str, Any], *, allow_bot: boo
     """Accept relevant course logistics/resources; keep unknown chatter out of runtime data."""
     if not allow_bot and str(raw_message.get("role", "")).casefold() == "bot":
         return False
+    content_raw = str(raw_message.get("content", ""))
     text = normalize_text(" ".join([
-        str(raw_message.get("content", "")),
+        content_raw,
         str(raw_message.get("channel", "")),
         " ".join(str(link.get("url", "")) for link in raw_message.get("links", []) if isinstance(link, Mapping)),
     ]))
-    return bool(raw_message.get("attachments")) or any(term in text for term in RELEVANCE_TERMS)
+    # Reject common non-course chatter
+    if any(casual in text for casual in ("an trua chua", "di choi", "xem phim", "an toi chua", "ca phe", "game")):
+        return False
+    if bool(raw_message.get("attachments")) or bool(raw_message.get("links")):
+        return True
+    if any(term in text for term in RELEVANCE_TERMS):
+        return True
+    if "?" in content_raw or any(term in text for term in QUESTION_TERMS):
+        return True
+    # Accept any message longer than 20 chars unless it's pure filler
+    return len(content_raw.strip()) > 20
+
+
 
 
 def _read_runtime_messages(path: Optional[Path] = None) -> Dict[str, Any]:
@@ -204,8 +229,17 @@ def ingest_raw_message(
         data["messages"] = messages
         atomic_write_json(RUNTIME_DATA_FILE, data)
         structured = get_structured(refresh=refresh, prefer_llm=prefer_llm)
+
+    if action == "created":
+        try:
+            from telegram_bot import notify_urgent_discord_message
+            notify_urgent_discord_message(normalized)
+        except Exception as exc:
+            pass
+
     update_status(last_event=action, last_reason=None, last_message_id=message_id, last_success_at=datetime.now(timezone.utc).isoformat())
     return {"accepted": True, "action": action, "id": message_id, "stats": structured.get("stats", {})}
+
 
 
 def remove_raw_message(message_id: Any, *, refresh: bool = True) -> Dict[str, Any]:

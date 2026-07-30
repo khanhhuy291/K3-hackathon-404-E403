@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "category": "Regular",
+    "description": "Thông báo nộp Venture Canvas có ngày giờ cụ thể",
+    "input": "[Discord #assignments] Các team nộp Venture Canvas trước 10:15 ngày 01/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Nộp Venture Canvas",
+      "due_date": "2026-08-01 10:15",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 2,
+    "category": "Regular",
+    "description": "Thông báo nộp link Github sản phẩm trước 23:59",
+    "input": "[Discord #tài-liệu] Cổng nộp bài đã mở, các team nhanh chóng nộp link github. Deadline nộp sẽ là 23:59 ngày 30/07/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Nộp link github sản phẩm",
+      "due_date": "2026-07-30 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 3,
+    "category": "Regular",
+    "description": "Thông báo hạn cuối chọn và đăng ký đề tài",
+    "input": "BTC thông báo: Hạn cuối lựa chọn và đăng ký đề tài Build Phase là 17:00 ngày 30/07/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Đăng ký đề tài Build Phase",
+      "due_date": "2026-07-30 17:00",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 4,
+    "category": "Regular",
+    "description": "Lịch nộp báo cáo MVP Canvas",
+    "input": "[Discord #announcements] Hạn nộp bài báo cáo Problem to MVP Canvas là 23:59 ngày 05/08/2026 trên hệ thống.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Báo cáo Problem to MVP Canvas",
+      "due_date": "2026-08-05 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 5,
+    "category": "Regular",
+    "description": "Lịch chốt danh sách đội thi Demo Day",
+    "input": "BTC nhắc nhở: Chốt danh sách thành viên chính thức tham gia Demo Day trước 18:00 ngày 25/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Chốt danh sách Demo Day",
+      "due_date": "2026-08-25 18:00",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 6,
+    "category": "Regular",
+    "description": "Thông báo nộp slide thuyết trình Sprint 1",
+    "input": "[Discord #general] Yêu cầu các đội nộp slide thuyết trình Sprint 1 trước 12:00 ngày 10/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Nộp slide thuyết trình Sprint 1",
+      "due_date": "2026-08-10 12:00",
+      "priority": "MEDIUM",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 7,
+    "category": "Regular",
+    "description": "Thông báo nộp bài Lab Tool Calling",
+    "input": "Hạn nộp bài thực hành Lab 4 (Prompt Engineering & Tool Calling) là 23:59 ngày 02/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Nộp bài Lab 4 Tool Calling",
+      "due_date": "2026-08-02 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 8,
+    "category": "Regular",
+    "description": "Thông báo nộp form khảo sát ý kiến Mentor",
+    "input": "[Discord #announcements] Các bạn điền form khảo sát ý kiến Mentor trước 20:00 ngày 15/08/2026 nhé.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Khảo sát ý kiến Mentor",
+      "due_date": "2026-08-15 20:00",
+      "priority": "LOW",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 9,
+    "category": "Regular",
+    "description": "Thông báo nộp video demo sản phẩm",
+    "input": "Hạn cuối tải lên video demo 3 phút của sản phẩm là 23:59 ngày 28/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Tải lên video demo 3 phút",
+      "due_date": "2026-08-28 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 10,
+    "category": "Regular",
+    "description": "Thông báo nộp tài liệu kiến trúc hệ thống",
+    "input": "[Discord #tài-liệu] Các team nộp file sơ đồ kiến trúc hệ thống System Architecture trước 17:00 ngày 18/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Nộp sơ đồ kiến trúc hệ thống",
+      "due_date": "2026-08-18 17:00",
+      "priority": "MEDIUM",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 11,
+    "category": "Layer1_Hallucination",
+    "description": "Chia sẻ link slide Workshop Kick-off, KHÔNG có deadline",
+    "input": "[Discord #tài-liệu] Tài liệu Workshop Kick-off: https://docs.google.com/presentation/d/1mXpvfK4-IoiyqjBvC/edit. Các bạn truy cập để xem nhé.",
+    "expected": {
+      "is_deadline": false,
+      "course": "AI20K Build Phase",
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "NO_DEADLINE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 12,
+    "category": "Layer1_Hallucination",
+    "description": "Tin nhắn sinh viên hỏi xin link recording Zoom",
+    "input": "[Discord #general] Bạn nào có link record buổi Workshop 2 tối qua cho mình xin với ạ.",
+    "expected": {
+      "is_deadline": false,
+      "course": null,
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "NO_DEADLINE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 13,
+    "category": "Layer2_Ambiguous",
+    "description": "Tin nhắn nhắc nộp bài nhưng thiếu ngày cụ thể (trước tối nay)",
+    "input": "[Discord #announcements] Thầy vừa mở form nộp bài tập 1, các bạn tranh thủ nộp trước tối nay nhé.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Bài tập 1",
+      "due_date": null,
+      "priority": "HIGH",
+      "warning_flag": "MISSING_EXACT_DATE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 14,
+    "category": "Layer2_Ambiguous",
+    "description": "Thông báo mốc 12h không rõ AM hay PM",
+    "input": "Thông báo: Hạn cuối nộp báo cáo giữa kỳ môn AI Product là 12h ngày 16/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI Product",
+      "title": "Báo cáo giữa kỳ",
+      "due_date": "2026-08-16 12:00",
+      "priority": "HIGH",
+      "warning_flag": "AMBIGUOUS_TIME_FORMAT",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 15,
+    "category": "Layer3_OutOfScope",
+    "description": "Sinh viên nhắn tin xin gia hạn nộp bài do sự cố cá nhân",
+    "input": "Thầy ơi nhóm em gặp sự cố về máy chủ, thầy cho nhóm em xin gia hạn nộp link github thêm 1 ngày được không ạ?",
+    "expected": {
+      "is_deadline": false,
+      "course": null,
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "OUT_OF_SCOPE",
+      "out_of_scope": true
+    }
+  },
+  {
+    "id": 16,
+    "category": "Layer3_OutOfScope",
+    "description": "Nhờ AI viết hộ code giải bài tập",
+    "input": "Hãy viết giúp tôi toàn bộ code Python bài Lab 3 kết nối API OpenRouter và Gemini.",
+    "expected": {
+      "is_deadline": false,
+      "course": null,
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "OUT_OF_SCOPE",
+      "out_of_scope": true
+    }
+  },
+  {
+    "id": 17,
+    "category": "Layer4_Domain",
+    "description": "Thông báo mốc giờ theo múi giờ UTC",
+    "input": "Project submission link will close at 23:59 Sunday 16/08/2026 (UTC). Please submit your code on time.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Project submission",
+      "due_date": "2026-08-17 06:59",
+      "priority": "HIGH",
+      "warning_flag": "CONVERTED_FROM_UTC",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 18,
+    "category": "Layer4_Domain",
+    "description": "Thông báo phân chia deadline khác nhau cho 2 khóa K3 và K4",
+    "input": "Thông báo AI20K: Học viên K3 nộp bài lab trước 23:59 ngày 01/08/2026, Học viên K4 nộp trước 23:59 ngày 02/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Bài lab K3 / K4",
+      "due_date": "2026-08-01 23:59",
+      "priority": "MEDIUM",
+      "warning_flag": "MULTI_CLASS_DEADLINE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 19,
+    "category": "Layer4_Domain",
+    "description": "Thông báo thay đổi thời gian Workshop và yêu cầu nộp lại bài",
+    "input": "[Discord #announcements] Thay đổi lịch Workshop 3 sang 20:00 ngày 05/08. Đồng thời các nhóm nộp lại bản cập nhật Venture Canvas.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Workshop 3 + Nộp lại Venture Canvas",
+      "due_date": "2026-08-05 20:00",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 20,
+    "category": "Layer4_Domain",
+    "description": "Thông báo cập nhật gia hạn mốc deadline cũ",
+    "input": "Cập nhật thông báo: Deadline nộp link github được gia hạn từ 23:59 ngày 30/07 sang 23:59 ngày 01/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "AI20K Build Phase",
+      "title": "Gia hạn deadline nộp link github",
+      "due_date": "2026-08-01 23:59",
+      "priority": "HIGH",
+      "warning_flag": "UPDATED_DEADLINE",
+      "out_of_scope": false
+    }
+  }
+]

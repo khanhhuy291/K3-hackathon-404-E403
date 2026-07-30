@@ -1,11 +1,12 @@
 {
   "metadata": {
     "server": "AI20K Build Phase - Cohort 3",
-    "generated_at": "2026-07-30T14:03:08.356769+07:00",
+    "generated_at": "2026-07-30T23:31:45.165134+07:00",
     "extractor": "deterministic_fallback",
     "source_file": "discord_message.json",
     "timezone": "Asia/Saigon",
-    "schema_version": "1.1"
+    "schema_version": "1.1",
+    "raw_revision": "7493c76298bbc81f499c5ff8c294c0fc31362e9d0d38d1caec8232d4e8b84d1a"
   },
   "announcements": [
     {
@@ -113,7 +114,7 @@
       "meeting_id": null,
       "passcode": null,
       "meeting_link": null,
-      "status": "due_soon"
+      "status": "overdue"
     },
     {
       "id": "msg009",
@@ -130,7 +131,7 @@
       "meeting_id": null,
       "passcode": null,
       "meeting_link": null,
-      "status": "upcoming"
+      "status": "due_soon"
     }
   ],
   "resources": [

@@ -1,150 +1,59 @@
-﻿let structured = null;
-
-const $ = (id) => document.getElementById(id);
-const fmt = (iso) => iso ? new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso)) : 'Chưa rõ';
-const escapeHtml = (s='') => String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\'':'&#39;','"':'&quot;'}[c]));
-
-async function getJSON(url, options={}) {
-  const res = await fetch(url, options);
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
-}
-
-function item({title, content, time, channel, author, status, level, href, extra}) {
-  return `<div class="item">
-    <h3>${escapeHtml(title || 'Không có tiêu đề')}</h3>
-    ${content ? `<p>${escapeHtml(content)}</p>` : ''}
-    ${extra ? `<p class="extra">${escapeHtml(extra)}</p>` : ''}
-    <div class="meta">
-      ${status ? `<span class="badge ${status}">${status}</span>` : ''}
-      ${level ? `<span class="badge ${level}">${level}</span>` : ''}
-      ${time ? `<span class="badge">${fmt(time)}</span>` : ''}
-      ${channel ? `<span class="badge">#${escapeHtml(channel)}</span>` : ''}
-      ${author ? `<span class="badge">${escapeHtml(author)}</span>` : ''}
-      ${href ? `<a class="badge" href="${escapeHtml(href)}" target="_blank">link</a>` : ''}
-    </div>
-  </div>`;
-}
-
-function renderStats(stats) {
-  $('stats').innerHTML = Object.entries(stats || {}).map(([k,v]) =>
-    `<div class="stat-card"><span>${escapeHtml(k)}</span><strong>${v}</strong></div>`
-  ).join('');
-}
-
-function renderStructured(data) {
-  structured = data;
-  renderStats(data.stats);
-  $('deadlineCount').textContent = `${data.deadlines?.length || 0} mục`;
-  $('deadlines').innerHTML = (data.deadlines || []).map(d => item({
-    title: d.title, content: d.content, time: d.deadline_at, channel: d.channel, author: d.author, status: d.status, extra: d.priority ? `priority: ${d.priority}` : ''
-  })).join('') || '<p class="empty">Không có deadline.</p>';
-
-  $('announcements').innerHTML = (data.announcements || []).map(a => item({
-    title: a.title || 'Thông báo', content: a.content,
-    time: a.message_time, channel: a.channel, author: a.author, status: a.priority
-  })).join('') || '<p class="empty">Không có thông báo.</p>';
-
-  $('meetings').innerHTML = (data.meetings || []).map(m => item({
-    title: m.title, content: m.content, time: m.meeting_at, channel: m.channel, author: m.author, status: m.status, href: m.meeting_link,
-    extra: [m.platform, m.meeting_id ? `ID ${m.meeting_id}` : '', m.passcode ? `Passcode ${m.passcode}` : ''].filter(Boolean).join(' • ')
-  })).join('') || '<p class="empty">Không có meeting.</p>';
-
-  const resourceItems = [ ...(data.resources || []).map(r => ({title:r.title, content:r.url, time:r.message_time, channel:r.channel, author:r.author, href:r.url, extra: r.kind})),
-    ...(data.documents || []).map(d => ({title:d.name, content:d.url, time:d.message_time, channel:d.channel, author:d.author, href:d.url, extra: d.kind})) ];
-  $('resources').innerHTML = resourceItems.map(item).join('') || '<p class="empty">Không có tài nguyên.</p>';
-  $('questions').innerHTML = (data.questions || []).map(q => item({
-    title: q.title || 'Câu hỏi', content: q.question || q.content, time: q.message_time, channel: q.channel, author: q.author, status: q.answered ? 'answered' : 'open'
-  })).join('') || '<p class="empty">Không có câu hỏi.</p>';
-  $('jsonView').textContent = JSON.stringify(data, null, 2);
-}
-
-function renderSearch(results) {
-  $('searchCount').textContent = `${results.count || 0} kết quả`;
-  $('searchResults').innerHTML = (results.results || []).map(r => {
-    const i = r.item || {};
-    return item({
-      title: `${i.section || 'item'}: ${i.title || i.name || i.id || 'Không tiêu đề'}`,
-      content: i.content || i.question || i.url || '',
-      time: i.deadline_at || i.meeting_at || i.message_time,
-      channel: i.channel,
-      author: i.author,
-      status: i.status,
-      extra: `score: ${r.score ?? 0}`
-    });
-  }).join('') || '<p class="empty">Không có kết quả tìm kiếm.</p>';
-}
-
-async function renderReminders() {
-  const hours = $('hoursSelect').value;
-  const data = await getJSON(`/api/reminders?hours=${hours}`);
-  $('reminderWindow').textContent = `${hours} giờ`;
-  $('reminders').innerHTML = (data.reminders || []).map(r => item({
-    title: r.message, time: r.deadline_at, level: r.level, status: r.level
-  })).join('') || '<p class="empty">Không có deadline trong khung thời gian này.</p>';
-}
-
-async function refresh({force=false, llm=false} = {}) {
-  $('jsonView').textContent = 'Loading...';
-  const data = await getJSON(`/api/structured?refresh=${force ? 1 : 0}&llm=${llm ? 1 : 0}`);
-  renderStructured(data);
-  await renderReminders();
-  const latest = await getJSON('/api/deadlines/latest');
-  const itemData = latest.item;
-  $('latestDeadlineState').textContent = itemData ? `${itemData.status} • ${itemData.hours_left} giờ` : 'no deadline';
-  $('latestDeadline').innerHTML = itemData ? item({
-    title: itemData.title,
-    content: itemData.content,
-    time: itemData.deadline_at,
-    channel: itemData.channel,
-    author: itemData.author,
-    status: itemData.status,
-    extra: latest.message
-  }) : '<p class="empty">Không tìm thấy deadline.</p>';
-}
-
-async function tick() {
-  try {
-    const t = await getJSON('/api/time');
-    $('now').textContent = `${t.date} ${t.time}`;
-  } catch { /* ignore */ }
-}
-
-async function doSearch() {
-  const q = $('searchInput').value.trim();
-  const section = $('sectionSelect').value;
-  const url = new URL('/api/search', window.location.origin);
-  if (q) url.searchParams.set('q', q);
-  if (section) url.searchParams.set('section', section);
-  const data = await getJSON(url.toString());
-  renderSearch(data);
-}
-
-async function askAgent(question) {
-  const q = question || $('qaInput').value.trim();
-  if (!q) return;
-  $('qaAnswer').textContent = 'Đang suy nghĩ...';
-  const data = await getJSON('/api/qa?q=' + encodeURIComponent(q));
-  $('qaAnswer').textContent = `${data.answer}\n\n--- tool trace ---\n${JSON.stringify(data.tool_trace, null, 2)}`;
-}
-
-$('refreshBtn').onclick = () => refresh({force:true});
-$('llmBtn').onclick = () => refresh({force:true, llm:true});
-$('hoursSelect').onchange = renderReminders;
-$('searchBtn').onclick = doSearch;
-$('searchInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
-$('qaBtn').onclick = () => askAgent();
-$('askSampleBtn').onclick = () => {
-  $('qaInput').value = 'Deadline gần nhất là gì?';
-  askAgent('Deadline gần nhất là gì?');
-};
-$('clearQaBtn').onclick = () => { $('qaInput').value = ''; $('qaAnswer').textContent = 'Agent sẽ trả lời ở đây...'; };
-$('copyJson').onclick = async () => {
-  await navigator.clipboard.writeText(JSON.stringify(structured, null, 2));
-  $('copyJson').textContent = 'Copied!';
-  setTimeout(() => $('copyJson').textContent = 'Copy JSON', 1200);
-};
-
-tick(); setInterval(tick, 1000);
-refresh();
-doSearch();
+﻿(() => {
+  const root = document.getElementById('app');
+  const icons = {
+    logo:'M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082',
+    dashboard:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+    calendar:'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+    bell:'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
+    doc:'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+    chat:'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
+    settings:'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z',
+    clock:'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',sync:'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',mail:'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',search:'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',send:'M12 19V5m0 0l-7 7m7-7l7 7',ok:'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',warn:'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'
+  };
+  const state = { page:'dashboard', data:null, notifs:null, deadlineFilter:'all', deadlineView:'table', docQ:'', notifQ:'', chat:[{role:'ai', text:'Xin chào! Mình là **SVK3 VinAI Action** 👋\n\nMình có thể giúp bạn kiểm tra deadline, tìm tài liệu và tóm tắt thông báo từ Gmail/Discord.', time:time()}], chatText:'', loading:false, toasts:[], seq:0, settings:{gmail:true,discord:true,n1:true,n2:true,n3:true,sync:'15',saved:false} };
+  const demoDeadlines = [
+    ['Nộp báo cáo Lab 3','Big Data','2026-07-30T23:59:00+07:00','Gmail','due_soon','high'],['Bài kiểm tra giữa kỳ','Big Data','2026-07-30T10:00:00+07:00','Gmail','done','high'],['Hoàn thành Assignment 2','Machine Learning','2026-08-01T23:59:00+07:00','Discord','upcoming','normal'],['Demo Sprint 2','Software Engineering','2026-08-02T14:00:00+07:00','Gmail','upcoming','normal'],['Bài tập tuần 10','KTLT','2026-08-04T23:59:00+07:00','Discord','upcoming','low']
+  ].map(([title,subject,deadline_at,source,status,priority])=>({title,subject,deadline_at,source,status,priority,content:subject}));
+  const demoNotifs = [
+    ['Gmail','Big Data','Nhắc nhở nộp báo cáo Lab 3','Sinh viên vui lòng nộp báo cáo Lab 3 trước 23:59 hôm nay qua BKeL.','2 giờ trước',false],['Discord','Machine Learning','Hoãn buổi học sáng mai','Thầy hoãn buổi học ML sáng 31/07. Assignment 2 vẫn giữ nguyên deadline.','4 giờ trước',false],['Gmail','Phòng Đào Tạo','Thông báo đăng ký học phần HK2','Đăng ký học phần HK2 bắt đầu từ 15/08/2026.','1 ngày trước',false],['Discord','Software Engineering','Tài liệu Sprint 2 đã cập nhật','File yêu cầu Sprint 2 đã được upload lên Drive.','1 ngày trước',true]
+  ].map((x,i)=>({id:i+1,source:x[0],subject:x[1],title:x[2],body:x[3],time:x[4],read:x[5]}));
+  const demoDocs = [['Slide Big Data - Tuần 9: MapReduce','Big Data','Gmail','29/07/2026','pdf'],['Assignment 2 - Description & Dataset','Machine Learning','Discord','28/07/2026','pdf'],['Sprint 2 Requirements & User Stories','Software Engineering','Gmail','28/07/2026','docx'],['Bài tập tuần 10 - KTLT','KTLT','Discord','27/07/2026','pdf']].map(x=>({name:x[0],subject:x[1],source:x[2],date:x[3],kind:x[4],url:'#'}));
+  const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const svg=(n,size=18,color='currentColor')=>`<svg width="${size}" height="${size}" fill="none" viewBox="0 0 24 24"><path d="${icons[n]}" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  function time(){ return new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}); }
+  function fmt(v){ try{return v?new Intl.DateTimeFormat('vi-VN',{dateStyle:'short',timeStyle:'short'}).format(new Date(v)):'Chưa rõ'}catch{return v} }
+  function src(o){ const t=`${o.source||''} ${o.source_url||''} ${o.channel||''}`.toLowerCase(); return t.includes('gmail')||t.includes('email')?'Gmail':(t.includes('discord')?'Discord':(o.source||'Discord')); }
+  function subj(o){ return o.subject||o.channel||(o.tags&&o.tags[0])||'Môn học'; }
+  function hours(v){ const h=(new Date(v)-new Date())/36e5; if(!isFinite(h))return ''; if(h<0)return 'Quá hạn'; return h<24?`${Math.max(1,Math.round(h))} giờ`:`${Math.round(h/24)} ngày`; }
+  function pri(o){ const p=String(o.priority||o.status||'').toLowerCase(); return p.includes('high')||p.includes('soon')||p.includes('overdue')?'red':(p.includes('low')?'green':'yellow'); }
+  function stat(o){ const s=String(o.status||'').toLowerCase(); return s.includes('done')?'done':(s.includes('overdue')?'overdue':'pending'); }
+  function badge(s){ return `<span class="badge ${s==='Gmail'?'gmail':'discord'}">${esc(s)}</span>`; }
+  function deadlines(){ const r=state.data?.deadlines?.length?state.data.deadlines:demoDeadlines; return r.map(d=>({...d,source:src(d),subject:subj(d)})); }
+  function notifs(){ if(state.notifs) return state.notifs; if(!state.data?.announcements?.length) return demoNotifs; return state.data.announcements.map((n,i)=>({id:n.id||i+1,source:src(n),subject:subj(n),title:n.title||'Thông báo',body:n.content||'',time:fmt(n.message_time),read:i>2})); }
+  function docs(){ if(!state.data?.documents?.length && !state.data?.resources?.length) return demoDocs; return [...(state.data.documents||[]),...(state.data.resources||[])].map((d,i)=>({name:d.name||d.title||`Tài liệu ${i+1}`,subject:subj(d),source:src(d),date:fmt(d.message_time).split(' ')[0],kind:(d.kind||d.type||'link').toLowerCase(),url:d.url||d.source_url||'#'})); }
+  function toast(text,type='info'){ const id=++state.seq; state.toasts.push({id,text,type}); render(); setTimeout(()=>{state.toasts=state.toasts.filter(t=>t.id!==id); const el=document.getElementById('toastStack'); if(el) el.innerHTML=toasts();},4000); }
+  async function api(u,o){ const r=await fetch(u,o); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+  async function load(refresh=false,llm=false){ try{ state.data=await api(`/api/structured?refresh=${refresh?1:0}&llm=${llm?1:0}`); state.notifs=null; toast('Đã đồng bộ dữ liệu backend.','success'); }catch(e){ console.warn(e); state.notifs=demoNotifs.slice(); toast('Không kết nối được API, dùng dữ liệu demo.','warning'); } render(); }
+  const statCard=(l,v,ic,c,b)=>`<div class="card"><div class="stat-top"><span class="stat-label">${l}</span><div class="stat-icon" style="background:${b}">${svg(ic,17,c)}</div></div><div class="stat-value">${v}</div></div>`;
+  const empty=t=>`<p class="empty">${esc(t)}</p>`;
+  function toasts(){return state.toasts.map(t=>`<div class="toast ${t.type}">${svg(t.type==='success'?'ok':'warn',18)}<p>${esc(t.text)}</p></div>`).join('')}
+  function shell(){ const nav=[['dashboard','Dashboard','dashboard'],['deadlines','Deadline','calendar'],['notifications','Thông báo','bell'],['documents','Tài liệu','doc'],['chat','Chat AI','chat'],['settings','Cài đặt','settings']]; const unread=notifs().filter(n=>!n.read).length; return `<div class="app-shell"><aside class="sidebar"><div class="logo"><div class="logo-mark">${svg('logo',18,'#fff')}</div><div><div class="logo-title">SVK3 VinAI Action</div><div class="logo-sub">Nhóm G12 · E403</div></div></div><nav class="nav">${nav.map(n=>`<button class="nav-btn ${state.page===n[0]?'active':''}" data-nav="${n[0]}">${svg(n[2],17)}<span>${n[1]}</span>${n[0]==='notifications'&&unread?`<span class="nav-badge">${unread}</span>`:''}</button>`).join('')}</nav><div class="user-card"><div class="avatar">N</div><div><div style="font-size:13px;font-weight:600">Nhóm G12</div><div class="logo-sub">SVK3 VinAI · E403</div></div></div></aside><main class="main">${page()}</main><div class="toast-stack" id="toastStack">${toasts()}</div></div>`; }
+  function page(){ return state.page==='deadlines'?deadlinePage():state.page==='notifications'?notificationPage():state.page==='documents'?documentPage():state.page==='chat'?chatPage():state.page==='settings'?settingsPage():dashboard(); }
+  function dashboard(){ const ds=deadlines(), ns=notifs(), dc=docs(), stats=state.data?.stats||{}; return `<div class="page"><div class="page-header"><div><h1 class="page-title">Chào buổi sáng, Minh! 👋</h1><p class="page-sub">Thứ Năm, 30 tháng 7, 2026 — AI đã đồng bộ 2 nguồn dữ liệu</p></div><div class="toolbar-lite" style="margin:0"><button class="small-action" id="refreshBtn">Đồng bộ</button><button class="small-action" id="llmBtn">Đồng bộ AI</button></div></div><div class="stats-grid">${statCard('Deadline hôm nay',ds.filter(d=>String(d.status).includes('soon')||String(d.status).includes('done')).length||2,'clock','#ef4444','#fef2f2')}${statCard('Deadline tuần này',ds.length,'calendar','#2563eb','#eff6ff')}${statCard('Thông báo mới',ns.filter(n=>!n.read).length,'bell','#d97706','#fffbeb')}${statCard('Nguồn đã đồng bộ',2,'sync','#16a34a','#f0fdf4')}</div><div class="two-grid"><section class="panel"><div class="panel-head"><h2 class="panel-title">Deadline sắp tới</h2><button class="link-btn" data-nav="deadlines">Xem tất cả →</button></div><div class="panel-body">${ds.slice(0,4).map(deadlineRow).join('')||empty('Không có deadline.')}</div></section><section class="panel"><div class="panel-head"><h2 class="panel-title">Thông báo mới</h2><button class="link-btn" data-nav="notifications">Xem tất cả →</button></div><div class="panel-body">${ns.slice(0,3).map(miniNotif).join('')}</div></section></div><section class="panel"><div class="panel-head"><h2 class="panel-title">Tài liệu gần đây</h2><button class="link-btn" data-nav="documents">Xem tất cả →</button></div><div class="doc-grid">${dc.slice(0,3).map(miniDoc).join('')}</div></section>${stats.messages?`<p class="page-sub" style="margin-top:18px">Dữ liệu thật: ${stats.messages} messages · ${stats.deadlines||0} deadline · ${stats.documents||0} tài liệu.</p>`:''}</div>`; }
+  function deadlineRow(d){ const p=pri(d), col={red:'#ef4444',yellow:'#d97706',green:'#16a34a'}[p]; return `<div class="list-row"><div class="dot" style="background:${col}"></div><div style="flex:1;min-width:0"><div class="row-title">${esc(d.title||'Deadline')}</div><div class="row-sub">${esc(d.subject)}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><span class="mono" style="font-size:11px;font-weight:600;color:${p==='red'?'#ef4444':'#64748b'}">${hours(d.deadline_at)}</span><span style="display:flex;gap:4px;align-items:center;font-size:10px;color:#94a3b8">${svg(d.source==='Gmail'?'mail':'chat',11,'#94a3b8')}${d.source}</span></div></div>`; }
+  function miniNotif(n){ return `<div class="list-row" style="display:block"><div style="display:flex;gap:8px;align-items:center;margin-bottom:5px">${badge(n.source)}<span class="row-title">${esc(n.title)}</span><span style="margin-left:auto;font-size:11px;color:#94a3b8">${esc(n.time)}</span></div><p style="margin:0;font-size:12px;color:#64748b;line-height:1.5">${esc(n.body)}</p><button class="link-btn" style="margin-top:6px" data-toast="Đang mở chi tiết...">Xem chi tiết →</button></div>`; }
+  function miniDoc(d){ return `<div class="list-row"><div class="icon-box">${svg('doc',18,'#2563eb')}</div><div style="flex:1;min-width:0"><div class="row-title">${esc(d.name)}</div><div class="row-sub">${esc(d.subject)} · ${esc(d.source)}</div></div><a class="small-action" href="${esc(d.url||'#')}" target="_blank">Mở</a></div>`; }
+  function deadlinePage(){ const rows=deadlines().filter(d=>{ const s=stat(d),h=(new Date(d.deadline_at)-new Date())/36e5; if(state.deadlineFilter==='today')return h<=24&&h>=-24; if(state.deadlineFilter==='week')return h<=168&&s!=='overdue'; if(state.deadlineFilter==='done')return s==='done'; if(state.deadlineFilter==='overdue')return s==='overdue'; return true; }); const fs=[['all','Tất cả'],['today','Hôm nay'],['week','7 ngày tới'],['done','Đã hoàn thành'],['overdue','Quá hạn']]; return `<div class="page"><div class="page-header"><div><h1 class="page-title">Deadline</h1><p class="page-sub">Quản lý tất cả deadline từ Gmail và Discord</p></div><div class="pill-group"><button class="pill ${state.deadlineView==='table'?'active soft':''}" data-view="table">☰ Bảng</button><button class="pill ${state.deadlineView==='calendar'?'active soft':''}" data-view="calendar">⊞ Lịch</button></div></div><div class="pill-group" style="margin-bottom:20px">${fs.map(f=>`<button class="pill ${state.deadlineFilter===f[0]?'active':''}" data-filter="${f[0]}">${f[1]}</button>`).join('')}</div>${state.deadlineView==='calendar'?calendar():`<div class="table-wrap panel"><table><thead><tr>${['Công việc','Môn học','Deadline','Nguồn','Trạng thái','Độ ưu tiên'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(deadlineTr).join('')}</tbody></table>${!rows.length?empty('Không có deadline nào'):''}</div>`}</div>`; }
+  function deadlineTr(d){ const p=pri(d),s=stat(d); return `<tr><td><strong>${esc(d.title||'Deadline')}</strong></td><td class="muted">${esc(d.subject)}</td><td class="mono">${fmt(d.deadline_at)}</td><td>${badge(d.source)}</td><td><span class="badge ${s==='overdue'?'red':s==='done'?'green':'discord'}">${s==='done'?'Hoàn thành':s==='overdue'?'Quá hạn':'Đang làm'}</span></td><td><span class="badge ${p}">${p==='red'?'Cao':p==='green'?'Thấp':'Trung bình'}</span></td></tr>`; }
+  function calendar(){ const days=['T2','T3','T4','T5','T6','T7','CN'],dates=[28,29,30,31,1,2,3]; return `<div class="calendar panel"><div style="display:flex;justify-content:space-between;margin-bottom:20px"><h3 style="margin:0;font-size:16px">Tháng 7 - 8, 2026</h3><div><button class="small-action">← Trước</button> <button class="small-action">Sau →</button></div></div><div class="calendar-grid">${days.map(d=>`<div class="calendar-day-name">${d}</div>`).join('')}${dates.map(d=>`<div class="calendar-cell ${d===30?'today':''}"><div class="calendar-date">${d}</div>${d===30?'<span class="cal-tag badge red">Big Data</span>':''}${d===1?'<span class="cal-tag badge yellow">ML Assign</span>':''}${d===2?'<span class="cal-tag badge yellow">SE Demo</span>':''}</div>`).join('')}</div></div>`; }
+  function notificationPage(){ const all=notifs(), q=state.notifQ.toLowerCase(); const rows=all.filter(n=>!q||`${n.title} ${n.body}`.toLowerCase().includes(q)); const unread=all.filter(n=>!n.read).length; return `<div class="page"><div class="page-header"><div><h1 class="page-title">Thông báo</h1><p class="page-sub">${unread} thông báo chưa đọc</p></div>${unread?'<button class="small-action" id="markRead">Đánh dấu tất cả đã đọc</button>':''}</div><div class="toolbar-lite"><div class="search-wrap">${svg('search',15,'#94a3b8')}<input class="input" id="notifSearch" value="${esc(state.notifQ)}" placeholder="Tìm kiếm thông báo..."></div></div><div style="display:flex;flex-direction:column;gap:10px">${rows.map(n=>`<div class="notification-card ${n.read?'':'unread'}" data-read="${n.id}"><div class="notification-line"><div class="notification-icon" style="background:${n.source==='Gmail'?'#fef2f2':'#eff6ff'}">${svg(n.source==='Gmail'?'mail':'chat',18,n.source==='Gmail'?'#ef4444':'#2563eb')}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">${n.read?'':'<div class="unread-dot"></div>'}<span style="font-size:14px;font-weight:700">${esc(n.title)}</span><span class="badge gray">${esc(n.subject)}</span><span style="margin-left:auto;font-size:11px;color:#94a3b8">${esc(n.time)}</span></div><p style="margin:0;font-size:13px;color:#475569;line-height:1.55">${esc(n.body)}</p><button class="link-btn" style="margin-top:8px">Xem chi tiết →</button></div></div></div>`).join('')||empty('Không tìm thấy thông báo nào')}</div></div>`; }
+  function documentPage(){ const all=docs(), q=state.docQ.toLowerCase(); const rows=all.filter(d=>!q||d.name.toLowerCase().includes(q)); return `<div class="page"><div style="margin-bottom:24px"><h1 class="page-title">Tài liệu</h1><p class="page-sub">AI đã thu thập ${all.length} tài liệu từ Gmail và Discord</p></div><div class="toolbar-lite"><div class="search-wrap">${svg('search',15,'#94a3b8')}<input class="input" id="docSearch" value="${esc(state.docQ)}" placeholder="Tìm kiếm tài liệu..."></div></div><div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">${statCard('Tổng tài liệu',all.length,'doc','#2563eb','#eff6ff')}${statCard('Từ Gmail',all.filter(d=>d.source==='Gmail').length,'mail','#ef4444','#fef2f2')}${statCard('Từ Discord',all.filter(d=>d.source==='Discord').length,'chat','#7c3aed','#f5f3ff')}</div><div class="table-wrap panel"><table><thead><tr>${['Tên tài liệu','Môn học','Nguồn','Ngày cập nhật',''].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(d=>{const ext=(d.kind||'LINK').toUpperCase().slice(0,4),c=ext.includes('PDF')?'#ef4444':ext.includes('DOC')?'#2563eb':'#16a34a';return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:7px;background:${c}15;display:flex;align-items:center;justify-content:center"><span class="mono" style="font-size:9px;font-weight:700;color:${c}">${esc(ext)}</span></div><strong>${esc(d.name)}</strong></div></td><td class="muted">${esc(d.subject)}</td><td>${badge(d.source)}</td><td class="mono muted">${esc(d.date)}</td><td><a class="small-action" href="${esc(d.url||'#')}" target="_blank">Mở →</a></td></tr>`}).join('')}</tbody></table>${!rows.length?empty('Không tìm thấy tài liệu nào'):''}</div></div>`; }
+  function chatPage(){ const sugg=['Hôm nay mình có deadline gì?','Tuần này còn bài tập nào chưa nộp?','Cho mình link tài liệu môn Big Data.','Có thông báo mới trên Discord không?','Deadline gần nhất là gì?']; return `<div class="chat-page"><div class="chat-header"><div class="ai-mark">${svg('logo',18,'#fff')}</div><div><div style="font-weight:700;font-size:15px">SVK3 VinAI Action · G12 E403</div><div class="online">Đang hoạt động · Đã đồng bộ Gmail & Discord</div></div></div><div class="messages" id="messages">${state.chat.map(msg).join('')}${state.loading?'<div class="message ai"><div class="ai-mark" style="width:32px;height:32px;border-radius:8px">'+svg('logo',15,'#fff')+'</div><div class="typing"><span></span><span></span><span></span></div></div>':''}</div>${state.chat.length<=1?`<div class="suggestions">${sugg.map(s=>`<button class="pill" data-suggest="${esc(s)}">${esc(s)}</button>`).join('')}</div>`:''}<div class="chat-input-zone"><div class="chat-input-box"><textarea id="chatInput" rows="1" placeholder="Hỏi AI về deadline, tài liệu hoặc thông báo...">${esc(state.chatText)}</textarea><button class="send-btn" id="sendBtn" ${!state.chatText.trim()||state.loading?'disabled':''}>${svg('send',16)}</button></div><p style="margin:8px 0 0;text-align:center;font-size:11px;color:#94a3b8">Enter để gửi · Shift+Enter để xuống dòng</p></div></div>`; }
+  function msg(m){ return `<div class="message ${m.role}">${m.role==='ai'?`<div class="ai-mark" style="width:32px;height:32px;border-radius:8px;margin-top:2px">${svg('logo',15,'#fff')}</div>`:''}<div class="bubble-wrap"><div class="bubble">${m.text.split('\n').map(l=>`<p>${esc(l).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</p>`).join('')}</div><div class="message-time">${esc(m.time)}</div></div></div>`; }
+  async function send(text){ text=(text||'').trim(); if(!text||state.loading)return; state.chat.push({role:'user',text,time:time()}); state.chatText=''; state.loading=true; render(); try{ const r=await api('/api/qa?q='+encodeURIComponent(text)); state.chat.push({role:'ai',text:r.answer||'Mình chưa có câu trả lời.',time:time()}); }catch{ state.chat.push({role:'ai',text:`Mình đang tìm kiếm thông tin về "${text}"...\n\nHiện chưa kết nối được backend. Hãy thử hỏi: **Deadline gần nhất là gì?**`,time:time()}); } state.loading=false; render(); }
+  function section(t,d,b){ return `<div class="section"><div class="section-head"><div style="font-size:15px;font-weight:700">${t}</div><div class="page-sub" style="font-size:12.5px">${d}</div></div><div class="section-body">${b}</div></div>`; }
+  function settingsPage(){ const s=state.settings; const integ=(name,desc,on,key,ic,c,b)=>`<div class="integration-card" style="margin-bottom:14px"><div class="notification-icon" style="background:${b}">${svg(ic,20,c)}</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${name}</div><div class="page-sub" style="font-size:12px">${desc}</div>${on?'<div style="font-size:11px;color:#16a34a;margin-top:3px">✓ Đã kết nối · Đồng bộ 2 phút trước</div>':''}</div><button class="small-action" data-integration="${key}" style="background:${on?'#fef2f2':'#f0fdf4'};color:${on?'#ef4444':'#16a34a'}">${on?'Ngắt kết nối':'Kết nối'}</button></div>`; const tog=(label,desc,key,on)=>`<div class="toggle-row" style="margin-bottom:14px"><div><div style="font-size:13.5px;font-weight:600">${label}</div><div class="page-sub" style="font-size:12px">${desc}</div></div><button class="switch ${on?'on':''}" data-toggle="${key}"></button></div>`; return `<div class="page narrow"><div style="margin-bottom:32px"><h1 class="page-title">Cài đặt</h1><p class="page-sub">Quản lý kết nối và tùy chỉnh SVK3 VinAI Action · Nhóm G12 E403</p></div>${section('Kết nối nguồn dữ liệu','Đồng bộ deadline và thông báo từ các nền tảng',integ('Gmail','Đồng bộ email từ giảng viên và nhà trường',s.gmail,'gmail','mail','#ef4444','#fef2f2')+integ('Discord','Theo dõi thông báo từ server lớp học',s.discord,'discord','chat','#5865f2','#eef2ff'))}${section('Cài đặt đồng bộ','Tần suất AI kiểm tra dữ liệu mới',`<div class="pill-group">${[['5','5 phút'],['15','15 phút'],['30','30 phút'],['60','1 giờ']].map(x=>`<button class="pill ${s.sync===x[0]?'active soft':''}" data-sync="${x[0]}">${x[1]}</button>`).join('')}</div>`)}${section('Thông báo','Tùy chỉnh loại thông báo nhận được',tog('Thông báo deadline mới','Khi AI phát hiện deadline chưa có trong hệ thống','n1',s.n1)+tog('Nhắc nhở trước deadline','Nhắc 24h và 2h trước khi deadline đến','n2',s.n2)+tog('Cảnh báo từ AI','Khi AI không chắc chắn về deadline cần xác nhận','n3',s.n3))}${section('Thông tin cá nhân','Thông tin tài khoản sinh viên',['Tên nhóm|Nhóm G12','Lớp / Phòng|E403','Chương trình|SVK3 VinAI Action','Đơn vị|VinAI Research'].map(x=>{let a=x.split('|');return `<label style="font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px">${a[0]}</label><input class="input" value="${a[1]}" style="margin-bottom:14px">`}).join(''))}<div style="display:flex;justify-content:flex-end"><button class="save-btn ${s.saved?'saved':''}" id="saveSettings">${s.saved?'✓ Đã lưu':'Lưu cài đặt'}</button></div></div>`; }
+  function bind(){ document.querySelectorAll('[data-nav]').forEach(e=>e.onclick=()=>{state.page=e.dataset.nav;render()}); document.getElementById('refreshBtn')?.addEventListener('click',()=>load(true,false)); document.getElementById('llmBtn')?.addEventListener('click',()=>load(true,true)); document.querySelectorAll('[data-filter]').forEach(e=>e.onclick=()=>{state.deadlineFilter=e.dataset.filter;render()}); document.querySelectorAll('[data-view]').forEach(e=>e.onclick=()=>{state.deadlineView=e.dataset.view;render()}); document.querySelectorAll('[data-toast]').forEach(e=>e.onclick=()=>toast(e.dataset.toast)); document.querySelectorAll('[data-read]').forEach(e=>e.onclick=()=>{let n=notifs().find(x=>String(x.id)===e.dataset.read); if(n)n.read=true; if(!state.notifs&&!state.data?.announcements?.length) state.notifs=demoNotifs; render()}); document.getElementById('markRead')?.addEventListener('click',()=>{state.notifs=notifs().map(n=>({...n,read:true}));render()}); let ns=document.getElementById('notifSearch'); if(ns)ns.oninput=e=>{state.notifQ=e.target.value;render()}; let ds=document.getElementById('docSearch'); if(ds)ds.oninput=e=>{state.docQ=e.target.value;render()}; document.querySelectorAll('[data-suggest]').forEach(e=>e.onclick=()=>send(e.dataset.suggest)); let ci=document.getElementById('chatInput'); if(ci){ci.oninput=e=>{state.chatText=e.target.value; document.getElementById('sendBtn').disabled=!state.chatText.trim()||state.loading}; ci.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(state.chatText)}}} document.getElementById('sendBtn')?.addEventListener('click',()=>send(state.chatText)); document.querySelectorAll('[data-integration]').forEach(e=>e.onclick=()=>{state.settings[e.dataset.integration]=!state.settings[e.dataset.integration];render()}); document.querySelectorAll('[data-toggle]').forEach(e=>e.onclick=()=>{state.settings[e.dataset.toggle]=!state.settings[e.dataset.toggle];render()}); document.querySelectorAll('[data-sync]').forEach(e=>e.onclick=()=>{state.settings.sync=e.dataset.sync;render()}); document.getElementById('saveSettings')?.addEventListener('click',()=>{state.settings.saved=true;toast('Đã lưu cài đặt.','success');setTimeout(()=>{state.settings.saved=false;render()},2000)}); if(state.page==='chat') setTimeout(()=>document.getElementById('messages')?.scrollTo(0,99999),0); }
+  function render(){ root.innerHTML=shell(); bind(); }
+  render(); setTimeout(()=>toast('AI phát hiện deadline mới: Nộp báo cáo Big Data vào 23:59 hôm nay!','warning'),1200); load(false,false);
+})();
