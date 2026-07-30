@@ -37,7 +37,13 @@ OPENAI_MODEL=meta/llama-3.1-70b-instruct
 
 Nếu không có key/API lỗi, agent fallback rule-based để demo luôn chạy.
 
-### 2) `DeadlineReminderAgent`
+### 2) `Discord crawler` (optional)
+- `backend/discord_bot.py` nhận tin nhắn mới và có lệnh `!scan_history [limit]` để quét tối đa 100 tin gần nhất trong text channel.
+- Mỗi Discord message được chuẩn hoá sang raw schema hiện có, giữ `message.jump_url`, links, attachments, author/channel/time và chống trùng theo Discord message ID.
+- Chỉ dữ liệu có dấu hiệu logistics/tài liệu khoá học mới được ingest; tin nhắn bot và chat thông thường bị bỏ qua.
+- Data crawl runtime được ghi vào `codebase/runtime/` (đã gitignore), sau đó dùng lại `RawJsonExtractorAgent` và provider/fallback hiện có. File fixture `../discord_message.json` vẫn là dữ liệu demo được track.
+
+### 3) `DeadlineReminderAgent`
 Tools:
 - `get_current_time()` — lấy thời gian hiện tại Asia/Saigon.
 - `check_deadlines(within_hours=72)` — kiểm tra deadline trong N giờ tới hoặc đã quá hạn.
@@ -45,7 +51,7 @@ Tools:
 - `make_reminders(within_hours=72)` — tạo nhắc nhở deadline.
 - `run_tool(tool, **kwargs)` — API chung để gọi tool.
 
-### 3) `StructuredSearchAgent`
+### 4) `StructuredSearchAgent`
 Tools search trong file yêu cầu:
 
 ```txt
@@ -55,7 +61,7 @@ codebase copy/structured_discord.json
 - `search(query, sections=None, limit=10)`
 - `search_deadlines(query, limit=10)`
 
-### 4) `AutoToolQAAgent`
+### 5) `AutoToolQAAgent`
 Một mini tool-calling framework trong `backend/agents.py`:
 - Tự gọi `get_current_time` trước.
 - Nếu câu hỏi hỏi deadline gần nhất/mới nhất/tiếp theo → gọi `latest_deadline`.
@@ -96,6 +102,19 @@ Hoặc chạy backend trực tiếp:
 ```bash
 python codebase/backend/server.py
 ```
+
+### Chạy crawler Discord thật (tuỳ chọn)
+
+1. Trong Discord Developer Portal, bật **Message Content Intent** cho bot và chỉ cấp quyền xem các test guild/channel cần thiết.
+2. Copy `codebase/.env.example` thành `.env`, điền `DISCORD_BOT_TOKEN`; có thể giới hạn bằng `DISCORD_ALLOWED_GUILD_IDS` và `DISCORD_ALLOWED_CHANNEL_IDS`.
+3. Cài SDK tuỳ chọn và chạy listener:
+
+```bash
+pip install -r codebase/requirements-discord.txt
+python codebase/backend/discord_bot.py
+```
+
+Bot ingest message mới và hỗ trợ `!scan_history 30` trong text channel. Không có token hoặc `discord.py` thì chỉ crawler dừng với thông báo rõ ràng; dashboard/API vẫn chạy bình thường. Không commit token, Discord message thật, hoặc nội dung trong `codebase/runtime/`.
 
 ## Lệnh hữu ích
 

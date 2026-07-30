@@ -26,7 +26,10 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = Path(__file__).resolve().parents[2]
 CODEBASE_DIR = ROOT / "codebase"
 DATA_FILE = ROOT / "discord_message.json"
+RUNTIME_DIR = CODEBASE_DIR / "runtime"
+RUNTIME_DATA_FILE = RUNTIME_DIR / "live_discord_messages.json"
 STRUCTURED_FILE = CODEBASE_DIR / "structured_discord.json"
+RUNTIME_STRUCTURED_FILE = RUNTIME_DIR / "structured_discord.json"
 COPY_STRUCTURED_FILE = ROOT / "codebase copy" / "structured_discord.json"
 DEFAULT_TZ_OFFSET = "+07:00"
 LOCAL_TZ = timezone(timedelta(hours=7))
@@ -201,6 +204,7 @@ class RawJsonExtractorAgent:
     def _base_item(self, server: str, m: Dict[str, Any]) -> Dict[str, Any]:
         mid = str(m.get("id", ""))
         channel = m.get("channel") or "unknown"
+        message_server = m.get("server") or server
         return {
             "id": mid,
             "channel": channel,
@@ -210,7 +214,7 @@ class RawJsonExtractorAgent:
             "title": m.get("title"),
             "content": m.get("content", ""),
             "tags": m.get("tags", []) or [],
-            "source_url": message_url(server, channel, mid),
+            "source_url": m.get("source_url") or m.get("jump_url") or message_url(message_server, channel, mid),
         }
 
     def _looks_like_deadline_text(self, text: str) -> bool:
@@ -413,9 +417,10 @@ class StructuredSearchAgent:
     path: Path = COPY_STRUCTURED_FILE
 
     def load(self) -> Dict[str, Any]:
-        if not self.path.exists() or self.path.stat().st_size == 0:
+        source = RUNTIME_STRUCTURED_FILE if RUNTIME_STRUCTURED_FILE.exists() else self.path
+        if not source.exists() or source.stat().st_size == 0:
             return {}
-        data = json.loads(self.path.read_text(encoding="utf-8"))
+        data = json.loads(source.read_text(encoding="utf-8"))
         return repair_texts(data)
 
     def flatten(self, data: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -535,8 +540,40 @@ class AutoToolQAAgent:
         return self.llm.chat_text(system, user)
 
 
+def _load_json_file(path: Path) -> Dict[str, Any]:
+    if not path.exists() or path.stat().st_size == 0:
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _message_rows(raw: Dict[str, Any]) -> List[Dict[str, Any]]:
+    return RawJsonExtractorAgent(NvidiaOpenAIClient())._iter_messages(raw)
+
+
 def load_raw() -> Dict[str, Any]:
-    return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+    """Return the synthetic fixture plus any ignored live Discord crawl records."""
+    fixture = _load_json_file(DATA_FILE)
+    live = _load_json_file(RUNTIME_DATA_FILE)
+    messages = _message_rows(fixture)
+    seen_ids = {str(message.get("id")) for message in messages if message.get("id") is not None}
+
+    for message in _message_rows(live):
+        message_id = str(message.get("id", ""))
+        if message_id and message_id in seen_ids:
+            continue
+        messages.append(message)
+        if message_id:
+            seen_ids.add(message_id)
+
+    return {
+        "server": fixture.get("server") or live.get("server") or "Discord",
+        "messages": messages,
+        "source_files": [str(DATA_FILE), str(RUNTIME_DATA_FILE)] if live else [str(DATA_FILE)],
+    }
 
 
 def sync_copy_structured(structured: Dict[str, Any]) -> None:
@@ -545,16 +582,23 @@ def sync_copy_structured(structured: Dict[str, Any]) -> None:
     COPY_STRUCTURED_FILE.write_text(json.dumps(structured, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def _write_structured_cache(structured: Dict[str, Any]) -> None:
+    target = RUNTIME_STRUCTURED_FILE if RUNTIME_DATA_FILE.exists() else STRUCTURED_FILE
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(structured, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def get_structured(refresh: bool = False, prefer_llm: bool = False, sync_copy: bool = True) -> Dict[str, Any]:
-    if STRUCTURED_FILE.exists() and not refresh:
-        cached = repair_texts(json.loads(STRUCTURED_FILE.read_text(encoding="utf-8")))
+    cache_file = RUNTIME_STRUCTURED_FILE if RUNTIME_DATA_FILE.exists() else STRUCTURED_FILE
+    if cache_file.exists() and not refresh:
+        cached = repair_texts(_load_json_file(cache_file))
         if cached.get("stats", {}).get("messages", 0) > 0:
-            if sync_copy:
+            if sync_copy and not RUNTIME_DATA_FILE.exists():
                 sync_copy_structured(cached)
             return cached
     agent = RawJsonExtractorAgent(NvidiaOpenAIClient())
     structured = agent.extract(load_raw(), prefer_llm=prefer_llm)
-    STRUCTURED_FILE.write_text(json.dumps(structured, ensure_ascii=False, indent=2), encoding="utf-8")
-    if sync_copy:
+    _write_structured_cache(structured)
+    if sync_copy and not RUNTIME_DATA_FILE.exists():
         sync_copy_structured(structured)
     return structured
