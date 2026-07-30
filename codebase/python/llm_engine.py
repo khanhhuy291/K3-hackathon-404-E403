@@ -5,6 +5,7 @@ Sử dụng Google Gemini API hoặc OpenAI API để trích xuất Deadline có
 
 import os
 import json
+import re
 import requests
 from typing import Dict, Any, Optional
 from pydantic import BaseModel, Field
@@ -22,7 +23,8 @@ class DeadlineExtractionResult(BaseModel):
     is_course_resource: bool = Field(description="True nếu chứa link tài liệu, slide, drive, file đính kèm")
     out_of_scope: bool = Field(description="True nếu người dùng hỏi xin gia hạn, nhờ giải bài tập")
     course: Optional[str] = Field(default=None, description="Tên môn học")
-    title: Optional[str] = Field(default=None, description="Tiêu đề thông báo/tài liệu/task")
+    title: Optional[str] = Field(default=None, description="Tiêu đề ngắn gọn thông báo/tài liệu/task")
+    summary: Optional[str] = Field(default=None, description="Tóm tắt ngắn 1-2 câu nội dung cốt lõi của thông báo")
     due_date: Optional[str] = Field(default=None, description="Hạn nộp YYYY-MM-DD HH:mm (Quy đổi về giờ VN UTC+7)")
     priority: str = Field(default="MEDIUM", description="HIGH | MEDIUM | LOW")
     confidence: float = Field(default=95.0, description="Độ tự tin của AI (0-100)")

@@ -8,7 +8,7 @@ import os
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from llm_engine import extract_deadline_gemini
-from storage_manager import load_storage, save_storage, add_extracted_item, mark_notification_read
+from storage_manager import load_storage, save_storage, add_extracted_item, mark_notification_read, toggle_deadline_status
 
 class DeadlineAPIHandler(BaseHTTPRequestHandler):
     def _set_headers(self, status=200):
@@ -31,7 +31,7 @@ class DeadlineAPIHandler(BaseHTTPRequestHandler):
             response = {
                 "status": "online",
                 "service": "Smart Deadline Assistant Python API",
-                "endpoints": ["GET /api/storage", "POST /api/extract-deadline", "POST /api/process-message", "POST /api/mark-read"]
+                "endpoints": ["GET /api/storage", "POST /api/extract-deadline", "POST /api/process-message", "POST /api/mark-read", "POST /api/toggle-deadline-status"]
             }
             self.wfile.write(json.dumps(response, ensure_ascii=False).encode('utf-8'))
 
@@ -44,6 +44,17 @@ class DeadlineAPIHandler(BaseHTTPRequestHandler):
                 payload = json.loads(post_data.decode('utf-8')) if post_data else {}
                 notif_id = payload.get("notif_id", None)
                 updated_storage = mark_notification_read(notif_id)
+                self._set_headers(200)
+                self.wfile.write(json.dumps({"success": True, "updated_storage": updated_storage}, ensure_ascii=False).encode('utf-8'))
+            except Exception as e:
+                self._set_headers(500)
+                self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+
+        elif self.path == "/api/toggle-deadline-status":
+            try:
+                payload = json.loads(post_data.decode('utf-8')) if post_data else {}
+                dl_id = payload.get("dl_id", None)
+                updated_storage = toggle_deadline_status(dl_id)
                 self._set_headers(200)
                 self.wfile.write(json.dumps({"success": True, "updated_storage": updated_storage}, ensure_ascii=False).encode('utf-8'))
             except Exception as e:

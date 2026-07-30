@@ -8,7 +8,7 @@
 
 | Mã Học Viên | Họ và Tên | Vai trò | Phân công cụ thể |
 |---|---|---|---|
-| HV001 | Khánh Huy | Product Owner / Spec Lead | Viết `spec.md`, khảo sát bằng chứng $n=22$, chịu trách nhiệm phần §1-§4 |
+| 2A202601591 | Nguyễn Bá Khánh Huy | Product Owner / Spec Lead | Viết `spec.md`, khảo sát bằng chứng $n=22$, chịu trách nhiệm phần §1-§4 |
 | HV002 | Thành viên 2 | AI / Prompt Engineer | Tối ưu System Prompt, xây dựng bộ `eval/golden_set.json`, chạy Eval R4 |
 | HV003 | Thành viên 3 | Fullstack Developer | Dựng Web Prototype trong `codebase/`, kết nối API LLM, xử lý UI/UX R5 |
 | HV004 | Thành viên 4 | User Researcher & QA | Thu thập feedback log `validation/`, làm slide demo `demo-slides.pdf`, R6 |
