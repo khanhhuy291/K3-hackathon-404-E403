@@ -51,10 +51,10 @@ async def on_message(message: discord.Message):
                 print(f"🙈 [BỎ QUA TIN RÁC/TRÒ CHUYỆN]: \"{message.content[:60]}\"")
                 return
 
-            # Tự động lưu trữ thông báo quan trọng & metadata vào storage.json local
+            # Tự động lưu trữ thông báo quan trọng & metadata vào PostgreSQL
             from storage_manager import add_extracted_item
             add_extracted_item(extracted, source="Discord")
-            print("💾 Đã tự động lưu trữ Thông báo / Deadline / Tài liệu vào storage.json local!")
+            print("💾 Đã tự động lưu trữ Thông báo / Deadline / Tài liệu vào PostgreSQL!")
 
             # Phản hồi Embed lên Discord
             embed = discord.Embed(
@@ -69,7 +69,7 @@ async def on_message(message: discord.Message):
                 embed.add_field(name="📁 Loại", value="Tài liệu / Slide đính kèm", inline=True)
 
             embed.add_field(name="💬 Nguồn trích dẫn", value=f'"{extracted.get("quote")}"', inline=False)
-            embed.set_footer(text=f"AI Confidence: {extracted.get('confidence')}% · Đã lưu storage.json local")
+            embed.set_footer(text=f"AI Confidence: {extracted.get('confidence')}% · Đã lưu vào PostgreSQL")
 
             await message.reply(embed=embed)
 

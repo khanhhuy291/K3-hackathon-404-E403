@@ -1,6 +1,6 @@
 """
 Python Native Backend API cho Smart Deadline Assistant
-Phục vụ Web Dashboard chuẩn sản phẩm thật + Đọc/Ghi local storage.json
+Phục vụ Web Dashboard chuẩn sản phẩm thật + Đọc/Ghi PostgreSQL
 Chạy: python3 codebase/python/main_api.py
 """
 
@@ -75,7 +75,7 @@ class DeadlineAPIHandler(BaseHTTPRequestHandler):
 
                 extracted = extract_deadline_gemini(raw_text, api_key)
                 
-                # Tự động lưu vào local storage.json (có chống trùng)
+                # Tự động lưu vào PostgreSQL (có chống trùng)
                 saved_res = add_extracted_item(extracted, source=source)
                 
                 self._set_headers(200)
