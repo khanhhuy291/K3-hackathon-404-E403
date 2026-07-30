@@ -22,6 +22,11 @@ DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localho
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL)
 
+
+def extract_first_url(text: str) -> str:
+    match = re.search(r"https?://\S+", text or "")
+    return match.group(0).rstrip(").,]}>\"'") if match else "#"
+
 def load_storage() -> Dict[str, Any]:
     """Đọc dữ liệu từ file storage.json -> Giờ là PostgreSQL"""
     try:
@@ -83,6 +88,7 @@ def extract_url_from_text(text: Any) -> str:
 def add_extracted_item(extracted_data: Dict[str, Any], source: str = "Discord") -> Dict[str, Any]:
     """Tự động thêm dữ liệu đã trích xuất vào DB (có chống trùng lặp)"""
     quote = (extracted_data.get("quote") or "Nội dung thông báo").strip()
+    raw_text = (extracted_data.get("raw_text") or quote).strip()
     title = (extracted_data.get("title") or "Thông báo mới").strip()
     course = (extracted_data.get("course") or "Chung").strip()
     summary = (extracted_data.get("summary") or quote[:120]).strip()
@@ -135,8 +141,8 @@ def add_extracted_item(extracted_data: Dict[str, Any], source: str = "Discord") 
                 }
 
         # 3. Thêm Document
-        doc_url = extract_url_from_text(quote)
-        if extracted_data.get("is_course_resource") or doc_url != "#":
+        doc_url = extract_url_from_text(raw_text)
+        if extracted_data.get("is_course_resource"):
             cur.execute("SELECT id FROM documents WHERE LOWER(name) = %s", (title_norm,))
             if not cur.fetchone():
                 doc_id = f"doc-{uuid.uuid4().hex[:8]}"

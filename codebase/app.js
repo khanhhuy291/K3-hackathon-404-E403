@@ -488,7 +488,6 @@ function renderDocuments() {
 
   document.getElementById("total-docs-count").innerText = docs.length;
   document.getElementById("discord-docs-count").innerText = docs.filter(d => d.source === 'Discord').length;
-
   body.innerHTML = docs.map(d => {
     const hasLink = d.url && d.url !== '#';
     return `

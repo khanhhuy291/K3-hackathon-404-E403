@@ -52,7 +52,8 @@ def extract_deadline_local(raw_text: str) -> Dict[str, Any]:
             "priority": "LOW",
             "confidence": 98.0,
             "warning_flag": "OUT_OF_SCOPE",
-            "quote": raw_text[:150]
+            "quote": raw_text[:150],
+            "raw_text": raw_text
         }
 
     # 2. Check Document / Course Resource (Drive, Google Docs, Presentation, PDF, File)
@@ -78,7 +79,8 @@ def extract_deadline_local(raw_text: str) -> Dict[str, Any]:
             "priority": "LOW",
             "confidence": 90.0,
             "warning_flag": "NO_RELEVANCE",
-            "quote": raw_text[:150]
+            "quote": raw_text[:150],
+            "raw_text": raw_text
         }
 
     # 4. Extract Dynamic Course & Title
@@ -125,7 +127,8 @@ def extract_deadline_local(raw_text: str) -> Dict[str, Any]:
         "priority": "HIGH" if any(k in lower for k in ["thi", "assignment", "cuối kỳ"]) else "MEDIUM",
         "confidence": 95.0,
         "warning_flag": warning_flag,
-        "quote": raw_text[:150]
+        "quote": raw_text[:150],
+        "raw_text": raw_text
     }
 
 
@@ -191,6 +194,7 @@ Trả về duy nhất 1 JSON object chuẩn chứa các trường bắt buộc s
             if not res_json.get("title"):
                 res_json["title"] = "Tài liệu môn học"
 
+        res_json.setdefault("raw_text", raw_text)
         return res_json
     except Exception as e:
         print(f"⚠️ Gọi OpenRouter API thất bại ({e}). Tự động dùng Local Parser...")
@@ -245,7 +249,9 @@ Cấu trúc JSON bắt buộc (KHÔNG thêm markdown hay chữ thừa):
 
         data = response.json()
         json_str = data["candidates"][0]["content"]["parts"][0]["text"]
-        return json.loads(json_str)
+        res_json = json.loads(json_str)
+        res_json.setdefault("raw_text", raw_text)
+        return res_json
     except Exception as e:
         print(f"⚠️ Gọi Gemini API thất bại ({e}). Tự động dùng Local Parser...")
         return extract_deadline_local(raw_text)
