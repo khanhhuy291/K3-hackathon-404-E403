@@ -9,10 +9,12 @@ Architecture:
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
 import sys
+import tempfile
 import urllib.request
 import unicodedata
 from dataclasses import dataclass
@@ -30,23 +32,44 @@ RUNTIME_DIR = CODEBASE_DIR / "runtime"
 RUNTIME_DATA_FILE = RUNTIME_DIR / "live_discord_messages.json"
 STRUCTURED_FILE = CODEBASE_DIR / "structured_discord.json"
 RUNTIME_STRUCTURED_FILE = RUNTIME_DIR / "structured_discord.json"
+RUNTIME_STATUS_FILE = RUNTIME_DIR / "crawler_status.json"
 COPY_STRUCTURED_FILE = ROOT / "codebase copy" / "structured_discord.json"
 DEFAULT_TZ_OFFSET = "+07:00"
 LOCAL_TZ = timezone(timedelta(hours=7))
 
 
-def load_dotenv(path: Path = ROOT / ".env") -> None:
+def load_dotenv(path: Path = ROOT / ".env") -> Optional[Path]:
+    """Load the root .env without overriding explicit process environment values."""
     if not path.exists():
-        return
-    for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        return None
+    for line in path.read_text(encoding="utf-8-sig", errors="ignore").splitlines():
         line = line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        key = key.strip()
-        value = value.strip().strip('"').strip("'")
+        key = key.strip().removeprefix("export ").strip()
+        value = value.strip()
+        if " #" in value and not value.startswith(("'", '"')):
+            value = value.split(" #", 1)[0].rstrip()
+        value = value.strip('"').strip("'")
         if key and key not in os.environ:
             os.environ[key] = value
+    return path
+
+
+def atomic_write_json(path: Path, data: Dict[str, Any]) -> None:
+    """Atomically replace a JSON file so concurrent readers never see partial output."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False, suffix=".tmp") as handle:
+        json.dump(data, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+        temp_path = Path(handle.name)
+    temp_path.replace(path)
+
+
+def raw_revision(raw: Dict[str, Any]) -> str:
+    payload = json.dumps(raw, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def fix_mojibake_text(value: str) -> str:
@@ -218,8 +241,10 @@ class RawJsonExtractorAgent:
         }
 
     def _looks_like_deadline_text(self, text: str) -> bool:
-        folded = (text or "").casefold()
-        return any(k in folded for k in ("deadline", "hạn", "han ", "hạn cuối", "trước ", "due "))
+        folded = normalize_text(text)
+        return any(k in folded for k in (
+            "deadline", "han", "han cuoi", "truoc", "due", "nop bai", "bai tap", "assignment", "submission",
+        ))
 
     def _looks_urgent_text(self, text: str) -> bool:
         folded = (text or "").casefold()
@@ -315,18 +340,21 @@ class RawJsonExtractorAgent:
         return candidate
 
     def _deadline_from_text(self, text: str, anchor_time: Optional[str] = None) -> Optional[datetime]:
-        m = re.search(r"(20\d{2}-\d{2}-\d{2})[ T](\d{1,2}:\d{2})", text)
+        m = re.search(r"(20\d{2}-\d{2}-\d{2})[ T](\d{1,2}(?::|h)\d{2})", text, re.I)
         if m:
-            return parse_dt(f"{m.group(1)}T{m.group(2)}:00")
+            return parse_dt(f"{m.group(1)}T{m.group(2).replace('h', ':')}:00")
         year = (parse_dt(anchor_time) or now_local()).year
-        m = re.search(r"(\d{1,2}:\d{2})\s*(?:ngày|ngay)\s*(\d{1,2})[/-](\d{1,2})(?:[/-](20\d{2}))?", text, re.I)
-        if m:
-            hhmm, day, month, y = m.groups()
-            return parse_dt(f"{int(day):02d}/{int(month):02d}/{y or year} {hhmm}")
-        m = re.search(r"(?:ngày|ngay)\s*(\d{1,2})[/-](\d{1,2})(?:[/-](20\d{2}))?.{0,20}?(\d{1,2}:\d{2})", text, re.I)
-        if m:
-            day, month, y, hhmm = m.groups()
-            return parse_dt(f"{int(day):02d}/{int(month):02d}/{y or year} {hhmm}")
+        time_pattern = r"(\d{1,2})(?::|h)(\d{2})"
+        date_pattern = r"(?:ngày|ngay)?\s*(\d{1,2})[/-](\d{1,2})(?:[/-](20\d{2}))?"
+        m = re.search(rf"{time_pattern}\s*(?:lúc|luc)?\s*{date_pattern}", text, re.I)
+        if not m:
+            m = re.search(rf"{date_pattern}.{{0,24}}?(?:lúc|luc)?\s*{time_pattern}", text, re.I)
+            if m:
+                day, month, y, hour, minute = m.groups()
+                return parse_dt(f"{int(day):02d}/{int(month):02d}/{y or year} {hour}:{minute}")
+        elif m:
+            hour, minute, day, month, y = m.groups()
+            return parse_dt(f"{int(day):02d}/{int(month):02d}/{y or year} {hour}:{minute}")
         return None
 
     def _infer_title(self, text: str, default: str = "Course item") -> str:
@@ -418,10 +446,7 @@ class StructuredSearchAgent:
 
     def load(self) -> Dict[str, Any]:
         source = RUNTIME_STRUCTURED_FILE if RUNTIME_STRUCTURED_FILE.exists() else self.path
-        if not source.exists() or source.stat().st_size == 0:
-            return {}
-        data = json.loads(source.read_text(encoding="utf-8"))
-        return repair_texts(data)
+        return repair_texts(_load_json_file(source))
 
     def flatten(self, data: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         data = data or self.load()
@@ -577,27 +602,27 @@ def load_raw() -> Dict[str, Any]:
 
 
 def sync_copy_structured(structured: Dict[str, Any]) -> None:
-    """Keep requested search file `codebase copy/structured_discord.json` usable."""
-    COPY_STRUCTURED_FILE.parent.mkdir(parents=True, exist_ok=True)
-    COPY_STRUCTURED_FILE.write_text(json.dumps(structured, ensure_ascii=False, indent=2), encoding="utf-8")
+    """Keep the legacy fixture-mode search mirror usable."""
+    atomic_write_json(COPY_STRUCTURED_FILE, structured)
 
 
 def _write_structured_cache(structured: Dict[str, Any]) -> None:
     target = RUNTIME_STRUCTURED_FILE if RUNTIME_DATA_FILE.exists() else STRUCTURED_FILE
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(structured, ensure_ascii=False, indent=2), encoding="utf-8")
+    atomic_write_json(target, structured)
 
 
 def get_structured(refresh: bool = False, prefer_llm: bool = False, sync_copy: bool = True) -> Dict[str, Any]:
+    raw = load_raw()
+    revision = raw_revision(raw)
     cache_file = RUNTIME_STRUCTURED_FILE if RUNTIME_DATA_FILE.exists() else STRUCTURED_FILE
     if cache_file.exists() and not refresh:
         cached = repair_texts(_load_json_file(cache_file))
-        if cached.get("stats", {}).get("messages", 0) > 0:
-            if sync_copy and not RUNTIME_DATA_FILE.exists():
-                sync_copy_structured(cached)
+        cache_matches_raw = cached.get("metadata", {}).get("raw_revision") == revision
+        if cached.get("stats", {}).get("messages", 0) > 0 and (cache_matches_raw or not RUNTIME_DATA_FILE.exists()):
             return cached
     agent = RawJsonExtractorAgent(NvidiaOpenAIClient())
-    structured = agent.extract(load_raw(), prefer_llm=prefer_llm)
+    structured = agent.extract(raw, prefer_llm=prefer_llm)
+    structured.setdefault("metadata", {})["raw_revision"] = revision
     _write_structured_cache(structured)
     if sync_copy and not RUNTIME_DATA_FILE.exists():
         sync_copy_structured(structured)

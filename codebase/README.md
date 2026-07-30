@@ -5,20 +5,16 @@ Prototype đọc `../discord_message.json`, tách **backend** và **frontend**, 
 ## Cấu trúc mới
 
 ```txt
+.env.example                 # copy thành ../.env (root repo), không commit key
 codebase/
 ├─ app.py                    # launcher tương thích: gọi backend/server.py
 ├─ backend/
-│  ├─ agents.py              # các agent + tool framework
-│  └─ server.py              # HTTP API backend, serve frontend
-├─ frontend/
-│  ├─ index.html             # dashboard UI
-│  ├─ app.js
-│  └─ styles.css
-├─ structured_discord.json   # output structured chính
-└─ .env.example
-
-codebase copy/
-└─ structured_discord.json   # file search target được sync tự động
+│  ├─ agents.py              # agents + tool framework + provider
+│  ├─ server.py              # HTTP API/backend, serve frontend
+│  ├─ discord_bot.py         # crawler Discord (process riêng, optional)
+│  └─ discord_ingestion.py   # normalize + ingest Discord vào pipeline hiện có
+├─ frontend/                 # dashboard UI đang được serve
+└─ runtime/                  # crawl/output thực tế, gitignored
 ```
 
 ## Các agent
@@ -52,11 +48,8 @@ Tools:
 - `run_tool(tool, **kwargs)` — API chung để gọi tool.
 
 ### 4) `StructuredSearchAgent`
-Tools search trong file yêu cầu:
-
-```txt
-codebase copy/structured_discord.json
-```
+- Fixture mode dùng structured output mẫu.
+- Khi crawler hoạt động, search dùng `codebase/runtime/structured_discord.json`, cùng source với API/Q&A.
 
 - `search(query, sections=None, limit=10)`
 - `search_deadlines(query, limit=10)`
@@ -105,16 +98,17 @@ python codebase/backend/server.py
 
 ### Chạy crawler Discord thật (tuỳ chọn)
 
-1. Trong Discord Developer Portal, bật **Message Content Intent** cho bot và chỉ cấp quyền xem các test guild/channel cần thiết.
-2. Copy `codebase/.env.example` thành `.env`, điền `DISCORD_BOT_TOKEN`; có thể giới hạn bằng `DISCORD_ALLOWED_GUILD_IDS` và `DISCORD_ALLOWED_CHANNEL_IDS`.
-3. Cài SDK tuỳ chọn và chạy listener:
+1. Trong Discord Developer Portal, bật **Message Content Intent**. Invite bot vào test guild với quyền **View Channel**, **Read Message History**, **Send Messages** và quyền đọc nội dung tin nhắn.
+2. Copy **root** `.env.example` thành **root** `.env` (cùng cấp `README.md`), điền `DISCORD_BOT_TOKEN` và ít nhất một trong `DISCORD_ALLOWED_GUILD_IDS` / `DISCORD_ALLOWED_CHANNEL_IDS`. Chỉ dùng `DISCORD_ALLOW_ALL=1` cho private test bot.
+3. Cài SDK tuỳ chọn, khởi động API/dashboard ở terminal 1, rồi chạy crawler ở terminal 2:
 
 ```bash
 pip install -r codebase/requirements-discord.txt
+python codebase/app.py
 python codebase/backend/discord_bot.py
 ```
 
-Bot ingest message mới và hỗ trợ `!scan_history 30` trong text channel. Không có token hoặc `discord.py` thì chỉ crawler dừng với thông báo rõ ràng; dashboard/API vẫn chạy bình thường. Không commit token, Discord message thật, hoặc nội dung trong `codebase/runtime/`.
+Bot ingest message mới, update/delete message và hỗ trợ `!scan_history 30` trong allowed text channel/thread. Xem trạng thái không có secret tại `GET /api/crawler/status`. Không có token hoặc `discord.py` thì chỉ crawler dừng với thông báo rõ ràng; dashboard/API vẫn chạy bình thường. Không commit token, Discord message thật, hoặc nội dung trong `codebase/runtime/`.
 
 ## Lệnh hữu ích
 
@@ -136,6 +130,7 @@ python codebase/app.py --refresh --llm
 - `GET /api/raw`
 - `GET /api/structured`
 - `GET /api/structured?refresh=1&llm=1`
+- `GET /api/crawler/status`
 - `GET /api/time`
 - `GET /api/deadlines/check?hours=72`
 - `GET /api/deadlines/latest`

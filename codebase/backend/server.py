@@ -21,6 +21,7 @@ from agents import (
     get_structured,
     load_raw,
 )
+from discord_ingestion import crawler_status
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -80,6 +81,8 @@ class ApiHandler(SimpleHTTPRequestHandler):
                 refresh = qs.get("refresh", ["0"])[0] == "1"
                 prefer_llm = qs.get("llm", ["0"])[0] == "1"
                 return self._send_json(get_structured(refresh=refresh, prefer_llm=prefer_llm))
+            if parsed.path == "/api/crawler/status":
+                return self._send_json(crawler_status())
             if parsed.path == "/api/time":
                 return self._send_json(DeadlineReminderAgent(get_structured()).get_current_time())
             if parsed.path == "/api/deadlines/check":
@@ -123,7 +126,7 @@ def main() -> None:
     port = int(os.getenv("PORT", "8000"))
     print(f"Backend API + frontend serving: http://localhost:{port}")
     print(f"Frontend dir: {FRONTEND_DIR}")
-    print("APIs: /api/structured, /api/search?q=deadline, /api/qa?q=deadline gần nhất")
+    print("APIs: /api/structured, /api/crawler/status, /api/search?q=deadline, /api/qa?q=deadline gần nhất")
     ThreadingHTTPServer(("", port), ApiHandler).serve_forever()
 
 
