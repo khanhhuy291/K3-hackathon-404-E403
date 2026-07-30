@@ -1,0 +1,399 @@
+{
+  "metadata": {
+    "server": "AI20K Build Phase - Cohort 3",
+    "generated_at": "2026-07-30T14:03:08.356769+07:00",
+    "extractor": "deterministic_fallback",
+    "source_file": "discord_message.json",
+    "timezone": "Asia/Saigon",
+    "schema_version": "1.1"
+  },
+  "announcements": [
+    {
+      "id": "msg001",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-23T14:15:00+07:00",
+      "title": "Chào mừng Build Phase",
+      "content": "Chào mừng các bạn đến với AI20K Build Phase. Chương trình kéo dài 6 tuần.",
+      "tags": [
+        "onboarding",
+        "build-phase"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg001",
+      "priority": "normal"
+    },
+    {
+      "id": "msg006",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-30T11:20:00+07:00",
+      "title": "Mentor Duty",
+      "content": "Mentor Duty diễn ra lúc 20:00 tối nay.",
+      "tags": [
+        "mentor-duty"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg006",
+      "priority": "normal"
+    }
+  ],
+  "deadlines": [
+    {
+      "id": "msg008",
+      "channel": "announcements",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-30T13:30:00+07:00",
+      "title": "Đăng ký đề tài",
+      "content": "Hạn cuối đăng ký đề tài là 23:59 ngày 30/07.",
+      "tags": [
+        "deadline",
+        "project"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg008",
+      "deadline_at": "2026-07-30T23:59:00+07:00",
+      "status": "due_soon",
+      "priority": "critical",
+      "raw_deadline": "2026-07-30T23:59:00"
+    },
+    {
+      "id": "msg003",
+      "channel": "assignments",
+      "author": "Mentor",
+      "role": "mentor",
+      "message_time": "2026-07-29T09:00:00+07:00",
+      "title": "Nộp Venture Canvas",
+      "content": "Các team nộp Venture Canvas trước 10:15 ngày 01/08.",
+      "tags": [
+        "deadline",
+        "venture"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/assignments/msg003",
+      "deadline_at": "2026-08-01T10:15:00+07:00",
+      "status": "upcoming",
+      "priority": "high",
+      "raw_deadline": "2026-08-01T10:15:00"
+    }
+  ],
+  "meetings": [
+    {
+      "id": "msg002",
+      "channel": "workshop",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-26T20:00:00+07:00",
+      "title": "Workshop 2",
+      "content": "Problem to MVP Canvas",
+      "tags": [
+        "workshop"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/workshop/msg002",
+      "meeting_at": "2026-07-26T20:00:00+07:00",
+      "platform": "Zoom",
+      "meeting_id": "92862242782",
+      "passcode": "232439",
+      "meeting_link": null,
+      "status": "overdue"
+    },
+    {
+      "id": "msg006",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-30T11:20:00+07:00",
+      "title": "Mentor Duty",
+      "content": "Mentor Duty diễn ra lúc 20:00 tối nay.",
+      "tags": [
+        "mentor-duty"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg006",
+      "meeting_at": "2026-07-30T20:00:00+07:00",
+      "platform": "Zoom",
+      "meeting_id": null,
+      "passcode": null,
+      "meeting_link": null,
+      "status": "due_soon"
+    },
+    {
+      "id": "msg009",
+      "channel": "office-hours",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-31T20:00:00+07:00",
+      "title": "Office Hours",
+      "content": "",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/office-hours/msg009",
+      "meeting_at": "2026-07-31T20:00:00+07:00",
+      "platform": "Discord Voice",
+      "meeting_id": null,
+      "passcode": null,
+      "meeting_link": null,
+      "status": "upcoming"
+    }
+  ],
+  "resources": [
+    {
+      "id": "msg001",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-23T14:15:00+07:00",
+      "title": "Chào mừng Build Phase",
+      "content": "Chào mừng các bạn đến với AI20K Build Phase. Chương trình kéo dài 6 tuần.",
+      "tags": [
+        "onboarding",
+        "build-phase"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg001",
+      "name": "Onboarding.pdf",
+      "url": "https://drive.google.com/file/d/1futc7irE5GRhab9v-2iQ4rJ3MAhQFqIZ/view",
+      "kind": "pdf"
+    },
+    {
+      "id": "msg004",
+      "channel": "resources",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-26T14:00:00+07:00",
+      "title": "Ngân hàng đề tài",
+      "content": "Danh sách đề tài Build Phase.",
+      "tags": [
+        "project",
+        "resource"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/resources/msg004",
+      "name": "Project Bank",
+      "url": "https://docs.google.com/spreadsheets/...",
+      "kind": "google_sheet"
+    },
+    {
+      "id": "msg007",
+      "channel": "resources",
+      "author": "Mentor",
+      "role": "mentor",
+      "message_time": "2026-07-30T12:00:00+07:00",
+      "title": "Slide Workshop 3",
+      "content": "Slide chuẩn bị cho Workshop 3.",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/resources/msg007",
+      "name": "Workshop3.pptx",
+      "url": "https://docs.google.com/presentation/...",
+      "kind": "google_slide"
+    }
+  ],
+  "documents": [
+    {
+      "id": "msg001",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-23T14:15:00+07:00",
+      "title": "Chào mừng Build Phase",
+      "content": "Chào mừng các bạn đến với AI20K Build Phase. Chương trình kéo dài 6 tuần.",
+      "tags": [
+        "onboarding",
+        "build-phase"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg001",
+      "name": "Onboarding.pdf",
+      "url": "https://drive.google.com/file/d/1futc7irE5GRhab9v-2iQ4rJ3MAhQFqIZ/view",
+      "kind": "pdf"
+    },
+    {
+      "id": "msg004",
+      "channel": "resources",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-26T14:00:00+07:00",
+      "title": "Ngân hàng đề tài",
+      "content": "Danh sách đề tài Build Phase.",
+      "tags": [
+        "project",
+        "resource"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/resources/msg004",
+      "name": "Project Bank",
+      "url": "https://docs.google.com/spreadsheets/...",
+      "kind": "google_sheet"
+    },
+    {
+      "id": "msg007",
+      "channel": "resources",
+      "author": "Mentor",
+      "role": "mentor",
+      "message_time": "2026-07-30T12:00:00+07:00",
+      "title": "Slide Workshop 3",
+      "content": "Slide chuẩn bị cho Workshop 3.",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/resources/msg007",
+      "name": "Workshop3.pptx",
+      "url": "https://docs.google.com/presentation/...",
+      "kind": "google_slide"
+    }
+  ],
+  "questions": [
+    {
+      "id": "msg005",
+      "channel": "general",
+      "author": "Nguyễn Văn A",
+      "role": "student",
+      "message_time": "2026-07-30T09:15:00+07:00",
+      "title": null,
+      "content": "Deadline chọn đề tài là khi nào?",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/general/msg005",
+      "question": "Deadline chọn đề tài là khi nào?",
+      "reply_to": "msg004",
+      "answered": false
+    }
+  ],
+  "timeline": [
+    {
+      "id": "msg001",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-23T14:15:00+07:00",
+      "title": "Chào mừng Build Phase",
+      "content": "Chào mừng các bạn đến với AI20K Build Phase. Chương trình kéo dài 6 tuần.",
+      "tags": [
+        "onboarding",
+        "build-phase"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg001",
+      "type": "announcement"
+    },
+    {
+      "id": "msg004",
+      "channel": "resources",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-26T14:00:00+07:00",
+      "title": "Ngân hàng đề tài",
+      "content": "Danh sách đề tài Build Phase.",
+      "tags": [
+        "project",
+        "resource"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/resources/msg004",
+      "type": "document"
+    },
+    {
+      "id": "msg002",
+      "channel": "workshop",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-26T20:00:00+07:00",
+      "title": "Workshop 2",
+      "content": "Problem to MVP Canvas",
+      "tags": [
+        "workshop"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/workshop/msg002",
+      "type": "workshop"
+    },
+    {
+      "id": "msg003",
+      "channel": "assignments",
+      "author": "Mentor",
+      "role": "mentor",
+      "message_time": "2026-07-29T09:00:00+07:00",
+      "title": "Nộp Venture Canvas",
+      "content": "Các team nộp Venture Canvas trước 10:15 ngày 01/08.",
+      "tags": [
+        "deadline",
+        "venture"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/assignments/msg003",
+      "type": "deadline"
+    },
+    {
+      "id": "msg005",
+      "channel": "general",
+      "author": "Nguyễn Văn A",
+      "role": "student",
+      "message_time": "2026-07-30T09:15:00+07:00",
+      "title": null,
+      "content": "Deadline chọn đề tài là khi nào?",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/general/msg005",
+      "type": "question"
+    },
+    {
+      "id": "msg006",
+      "channel": "announcements",
+      "author": "Vonhatcuong",
+      "role": "mentor",
+      "message_time": "2026-07-30T11:20:00+07:00",
+      "title": "Mentor Duty",
+      "content": "Mentor Duty diễn ra lúc 20:00 tối nay.",
+      "tags": [
+        "mentor-duty"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg006",
+      "type": "announcement"
+    },
+    {
+      "id": "msg007",
+      "channel": "resources",
+      "author": "Mentor",
+      "role": "mentor",
+      "message_time": "2026-07-30T12:00:00+07:00",
+      "title": "Slide Workshop 3",
+      "content": "Slide chuẩn bị cho Workshop 3.",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/resources/msg007",
+      "type": "document"
+    },
+    {
+      "id": "msg008",
+      "channel": "announcements",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-30T13:30:00+07:00",
+      "title": "Đăng ký đề tài",
+      "content": "Hạn cuối đăng ký đề tài là 23:59 ngày 30/07.",
+      "tags": [
+        "deadline",
+        "project"
+      ],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/announcements/msg008",
+      "type": "deadline"
+    },
+    {
+      "id": "msg010",
+      "channel": "general",
+      "author": "Nguyễn Văn B",
+      "role": "student",
+      "message_time": "2026-07-30T13:40:00+07:00",
+      "title": null,
+      "content": "Mọi người đã chọn đề tài chưa?",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/general/msg010",
+      "type": "discussion"
+    },
+    {
+      "id": "msg009",
+      "channel": "office-hours",
+      "author": "Admin - ODIN",
+      "role": "admin",
+      "message_time": "2026-07-31T20:00:00+07:00",
+      "title": "Office Hours",
+      "content": "",
+      "tags": [],
+      "source_url": "discord://AI20K-Build-Phase---Cohort-3/office-hours/msg009",
+      "type": "meeting"
+    }
+  ],
+  "stats": {
+    "messages": 10,
+    "announcements": 2,
+    "deadlines": 2,
+    "meetings": 3,
+    "resources": 3,
+    "documents": 3,
+    "questions": 1
+  }
+}
