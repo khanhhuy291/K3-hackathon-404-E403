@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "category": "Regular",
+    "description": "Thông báo bài tập rõ tên môn, ngày giờ",
+    "input": "[Discord #announcements] [AI-K3] Thầy gửi assignment 2 môn Machine Learning. Hạn nộp bài là trước 23:59 ngày 15/08/2026 trên hệ thống VLearn.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Machine Learning",
+      "title": "Assignment 2",
+      "due_date": "2026-08-15 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 2,
+    "category": "Regular",
+    "description": "Email Outlook thông báo quiz online",
+    "input": "Dear All, Quiz 1 môn Lập trình Python sẽ mở vào lúc 08:00 và đóng link nộp lúc 22:00 ngày 10/08/2026. Các bạn lưu ý làm đúng giờ.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Lập trình Python",
+      "title": "Quiz 1",
+      "due_date": "2026-08-10 22:00",
+      "priority": "MEDIUM",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 3,
+    "category": "Regular",
+    "description": "Thông báo thi cuối kỳ",
+    "input": "[Outlook] Thông báo lịch thi cuối kỳ môn Đồ án AI: Thi trực tiếp tại P.502 lúc 14:00 ngày 25/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Đồ án AI",
+      "title": "Thi cuối kỳ",
+      "due_date": "2026-08-25 14:00",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 4,
+    "category": "Regular",
+    "description": "Deadline bài tập nhóm",
+    "input": "[Discord #nhom-1] Các bạn ơi chốt slide thuyết trình môn Product Management trước 18:00 ngày 12/08 nhé.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Product Management",
+      "title": "Chốt slide thuyết trình",
+      "due_date": "2026-08-12 18:00",
+      "priority": "MEDIUM",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 5,
+    "category": "Regular",
+    "description": "Thông báo nộp bài thu hoạch",
+    "input": "Nhắc nhở: Hạn nộp file PDF bài thu hoạch Hackathon là 23:59 ngày 31/07/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Hackathon AI",
+      "title": "Nộp file PDF bài thu hoạch",
+      "due_date": "2026-07-31 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 6,
+    "category": "Regular",
+    "description": "Thông báo đăng ký đề tài",
+    "input": "[Outlook] Sinh viên đăng ký tên đề tài nghiên cứu khoa học trước 17:00 ngày 05/09/2026 qua form.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Nghiên cứu khoa học",
+      "title": "Đăng ký tên đề tài",
+      "due_date": "2026-09-05 17:00",
+      "priority": "MEDIUM",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 7,
+    "category": "Regular",
+    "description": "Thông báo nộp bổ sung học phí/hồ sơ",
+    "input": "Phòng đào tạo thông báo: Hạn cuối bổ sung hồ sơ tốt nghiệp là 11:30 ngày 18/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Phòng Đào Tạo",
+      "title": "Bổ sung hồ sơ tốt nghiệp",
+      "due_date": "2026-08-18 11:30",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 8,
+    "category": "Regular",
+    "description": "Nhắc nộp khảo sát môn học",
+    "input": "[Discord #general] Mọi người nhớ làm khảo sát đánh giá giảng viên trước 20:00 ngày 14/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Khảo sát",
+      "title": "Đánh giá giảng viên",
+      "due_date": "2026-08-14 20:00",
+      "priority": "LOW",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 9,
+    "category": "Regular",
+    "description": "Lịch nộp code đồ án",
+    "input": "Hạn nộp source code Github môn Web Development: 23:59 ngày 20/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Web Development",
+      "title": "Nộp source code Github",
+      "due_date": "2026-08-20 23:59",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 10,
+    "category": "Regular",
+    "description": "Thông báo đọc trước tài liệu",
+    "input": "[Discord] Yêu cầu học viên đọc trước Chapter 3 sách Deep Learning trước buổi học lúc 08:00 ngày 08/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Deep Learning",
+      "title": "Đọc trước Chapter 3",
+      "due_date": "2026-08-08 08:00",
+      "priority": "LOW",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 11,
+    "category": "Layer1_Hallucination",
+    "description": "Email thông báo tin tức nghỉ học, KHÔNG có deadline",
+    "input": "[Outlook] Thông báo: Sáng mai ngày 01/08 giảng viên có lịch họp đột xuất nên lớp Deep Learning được nghỉ.",
+    "expected": {
+      "is_deadline": false,
+      "course": "Deep Learning",
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "NO_DEADLINE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 12,
+    "category": "Layer1_Hallucination",
+    "description": "Tin nhắn sinh viên chém gió trên Discord",
+    "input": "[Discord #chat] Bạn nào có link slide bài 3 cho mình xin với, bài hôm qua khó hiểu quá.",
+    "expected": {
+      "is_deadline": false,
+      "course": null,
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "NO_DEADLINE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 13,
+    "category": "Layer2_Ambiguous",
+    "description": "Tin nhắn có deadline nhưng thiếu ngày cụ thể (tối nay)",
+    "input": "[Discord #announcements] Thầy vừa mở bài tập 1 môn Data Structure, các bạn nộp trước tối nay nhé.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Data Structure",
+      "title": "Bài tập 1",
+      "due_date": null,
+      "priority": "HIGH",
+      "warning_flag": "MISSING_EXACT_DATE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 14,
+    "category": "Layer2_Ambiguous",
+    "description": "Tin nhắn hạn chót 12h (không rõ AM hay PM)",
+    "input": "Thông báo: Hạn cuối nộp Assignment môn NLP là 12h ngày 16/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "NLP",
+      "title": "Assignment",
+      "due_date": "2026-08-16 12:00",
+      "priority": "HIGH",
+      "warning_flag": "AMBIGUOUS_TIME_FORMAT",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 15,
+    "category": "Layer3_OutOfScope",
+    "description": "Sinh viên yêu cầu xin gia hạn nộp bài",
+    "input": "Thầy ơi em bị sốt mấy hôm nay, thầy cho em xin gia hạn bài tập môn AI thêm 2 ngày được không ạ?",
+    "expected": {
+      "is_deadline": false,
+      "course": null,
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "OUT_OF_SCOPE",
+      "out_of_scope": true
+    }
+  },
+  {
+    "id": 16,
+    "category": "Layer3_OutOfScope",
+    "description": "Yêu cầu giải bài tập hộ",
+    "input": "Hãy giải giúp tôi bài tập Python này và viết code hoàn chỉnh: Cho mảng A, tìm phần tử lớn thứ 2.",
+    "expected": {
+      "is_deadline": false,
+      "course": null,
+      "title": null,
+      "due_date": null,
+      "priority": null,
+      "warning_flag": "OUT_OF_SCOPE",
+      "out_of_scope": true
+    }
+  },
+  {
+    "id": 17,
+    "category": "Layer4_Domain",
+    "description": "Lệch múi giờ UTC",
+    "input": "Assignment submission link will close at 23:59 Sunday 16/08/2026 (UTC). Please submit on time.",
+    "expected": {
+      "is_deadline": true,
+      "course": "General",
+      "title": "Assignment submission",
+      "due_date": "2026-08-17 06:59",
+      "priority": "HIGH",
+      "warning_flag": "CONVERTED_FROM_UTC",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 18,
+    "category": "Layer4_Domain",
+    "description": "Tên môn viết tắt + 2 lớp có deadline khác nhau",
+    "input": "Thông báo môn XSTK: Lớp K3-A nộp bài thảo luận trước 17:00 ngày 10/08, Lớp K3-B nộp trước 17:00 ngày 11/08.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Xác suất Thống kê",
+      "title": "Bài thảo luận K3-A / K3-B",
+      "due_date": "2026-08-10 17:00",
+      "priority": "MEDIUM",
+      "warning_flag": "MULTI_CLASS_DEADLINE",
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 19,
+    "category": "Layer4_Domain",
+    "description": "Thông báo thay đổi phòng học & nộp lại bài",
+    "input": "[Outlook] Thay đổi phòng học môn Computer Vision từ P301 sang P504 lúc 09:00 ngày 05/08. Đồng thời nộp lại bản in báo cáo.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Computer Vision",
+      "title": "Đổi phòng học + Nộp bản in báo cáo",
+      "due_date": "2026-08-05 09:00",
+      "priority": "HIGH",
+      "warning_flag": null,
+      "out_of_scope": false
+    }
+  },
+  {
+    "id": 20,
+    "category": "Layer4_Domain",
+    "description": "Tin nhắn trích dẫn bài đăng cũ kèm thay đổi hạn nộp",
+    "input": "Update lại thông báo cũ: Deadline môn Machine Learning được gia hạn từ 23:59 ngày 10/08 sang 23:59 ngày 12/08/2026.",
+    "expected": {
+      "is_deadline": true,
+      "course": "Machine Learning",
+      "title": "Deadline được gia hạn",
+      "due_date": "2026-08-12 23:59",
+      "priority": "HIGH",
+      "warning_flag": "UPDATED_DEADLINE",
+      "out_of_scope": false
+    }
+  }
+]

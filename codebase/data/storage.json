@@ -1,0 +1,131 @@
+{
+  "stats": {
+    "user_name": "Minh",
+    "group_name": "Nhóm G12 · Zone 1",
+    "sub_title": "SVK3 VinAI · E403",
+    "synced_sources": 1
+  },
+  "deadlines": [
+    {
+      "id": "dl-2",
+      "title": "Thông báo lựa chọn đề tài",
+      "course": "Chung",
+      "due_date": "2026-07-30 23:59",
+      "due_relative": "Sắp tới",
+      "source": "Discord",
+      "status": "Đang làm",
+      "priority": "HIGH"
+    },
+    {
+      "id": "dl-1",
+      "title": "Nộp báo cáo môn AI",
+      "course": "AI",
+      "due_date": "2026-08-15 23:59",
+      "due_relative": "Sắp tới",
+      "source": "Discord",
+      "status": "Đang làm",
+      "priority": "HIGH"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-7",
+      "title": "WORKSHOP 1: KICK-OFF",
+      "summary": "Hẹn gặp tất cả các bạn lúc 20:00 tối nay.",
+      "course": "AI20K",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Hẹn gặp tất cả các bạn lúc 20:00 tối nay.",
+      "is_read": false
+    },
+    {
+      "id": "notif-8",
+      "title": "Thông báo lựa chọn đề tài",
+      "summary": "Thứ Năm, ngày 30/07/2026: Hạn cuối lựa chọn và đăng ký đề tài.",
+      "course": "Chung",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Thứ Năm, ngày 30/07/2026: Hạn cuối lựa chọn và đăng ký đề tài.",
+      "is_read": false
+    },
+    {
+      "id": "notif-6",
+      "title": "Nhắc nhở daily stand-up",
+      "summary": "Nhắc nhở daily stand-up! Đội t-081 chưa hoàn thành stand-up hôm nay (2026-07-30).",
+      "course": "t-081",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Nhắc nhở daily stand-up! Đội t-081 chưa hoàn thành stand-up hôm nay (2026-07-30).",
+      "is_read": true
+    },
+    {
+      "id": "notif-4",
+      "title": "Nộp báo cáo môn AI",
+      "summary": "Nop bao cao mon AI truoc 23:59 ngay 15/08/2026.",
+      "course": "AI",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Nop bao cao mon AI truoc 23:59 ngay 15/08/2026.",
+      "is_read": true
+    },
+    {
+      "id": "notif-3",
+      "title": "THÔNG BÁO NHẮC LẠI LỊCH: MENTOR DUTY",
+      "summary": "Chào các bạn, như lịch định kỳ thì tối thứ 4 hàng tuần chúng ta sẽ có lịch mentor duty, các bạn đừng quên lịch vào lúc 20h00 nhé.",
+      "course": "Chung",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Chào các bạn, như lịch định kỳ thì tối thứ 4 hàng tuần chúng ta sẽ có lịch mentor duty, các bạn đừng quên lịch vào lúc 20h00 nhé.",
+      "is_read": true
+    },
+    {
+      "id": "notif-2",
+      "title": "Video Recording WS2: Problem to MVP Canvas",
+      "summary": "Video Recording WS2: Problem to MVP Canvas https://zoom.us/rec/share/v7f4LjlaRUZ0YBi5rhncfSul9V-neguFpkOwD2O6hjAvfi7UFw76vuSWNZru4B1K.44SliMpwel1LNpUR",
+      "course": "AI20K Build Phase",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Video Recording WS2: Problem to MVP Canvas https://zoom.us/rec/share/v7f4LjlaRUZ0YBi5rhncfSul9V-neguFpkOwD2O6hjAvfi7UFw76vuSWNZru4B1K.44SliMpwel1LNpUR Passcode: t7aFkN6? Lưu ý: Tài liệu lưu hành nội bộ chương trình AI20K Build Phase",
+      "is_read": true
+    },
+    {
+      "id": "notif-1",
+      "title": "Tài liệu Workshop Kick-off",
+      "summary": "Tài liệu Workshop Kick-off: https://docs.google.com/presentation/d/1mXpvfK4-IoiyqjBvC_tIWa7LP9jvdyxxYPfxZP0ttLY/edit?usp=sharing",
+      "course": "Workshop Kick-off",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Tài liệu Workshop Kick-off: https://docs.google.com/presentation/d/1mXpvfK4-IoiyqjBvC_tIWa7LP9jvdyxxYPfxZP0ttLY/edit?usp=sharing",
+      "is_read": true
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-3",
+      "name": "WORKSHOP 1: KICK-OFF",
+      "file_type": "LINK",
+      "course": "AI20K",
+      "source": "Discord",
+      "updated_date": "Hôm nay",
+      "url": "#"
+    },
+    {
+      "id": "doc-2",
+      "name": "Video Recording WS2: Problem to MVP Canvas",
+      "file_type": "VIDEO/RECORDING",
+      "course": "AI20K Build Phase",
+      "source": "Discord",
+      "updated_date": "Hôm nay",
+      "url": "https://zoom.us/rec/share/v7f4LjlaRUZ0YBi5rhncfSul9V-neguFpkOwD2O6hjAvfi7UFw76vuSWNZru4B1K.44SliMpwel1LNpUR"
+    },
+    {
+      "id": "doc-1",
+      "name": "Tài liệu Workshop Kick-off",
+      "file_type": "SLIDE/LINK",
+      "course": "Workshop Kick-off",
+      "source": "Discord",
+      "updated_date": "Hôm nay",
+      "url": "https://docs.google.com/presentation/d/1mXpvfK4-IoiyqjBvC_tIWa7LP9jvdyxxYPfxZP0ttLY/edit?usp=sharing"
+    }
+  ]
+}

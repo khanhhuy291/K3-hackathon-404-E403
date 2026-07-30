@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVK3 VinAI Action — Quản lý Thông báo, Deadline & Tài liệu AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="brand-text">
+          <h2>SVK3 VinAI Action</h2>
+          <span class="badge-group">Nhóm G12 · E403</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" onclick="switchTab('dashboard')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-item" onclick="switchTab('deadline')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Deadline & Lịch
+        </button>
+        <button class="nav-item" onclick="switchTab('notifications')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          Thông báo
+          <span id="notif-badge-count" class="nav-badge">0</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('documents')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          Tài liệu
+        </button>
+        <button class="nav-item" onclick="switchTab('chatai')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          Chat AI / Input
+        </button>
+        <button class="nav-item" onclick="switchTab('settings')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Cài đặt
+        </button>
+      </nav>
+
+      <div class="user-profile">
+        <div class="avatar">N</div>
+        <div class="user-info">
+          <h4>Nhóm G12</h4>
+          <p>SVK3 VinAI · E403</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- 1. DASHBOARD TAB -->
+      <section id="tab-dashboard" class="tab-content active">
+        <div class="header-section">
+          <h2>Chào buổi sáng, Minh! 👋</h2>
+          <p class="sub-date">Thứ Tư, 30 tháng 7, 2026 — AI đã đồng bộ 1 nguồn dữ liệu từ Discord</p>
+        </div>
+
+        <!-- 4 Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-title">Deadline hôm nay</span>
+              <span id="stat-dl-today" class="stat-number">0</span>
+            </div>
+            <div class="stat-icon icon-pink">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-title">Deadline tuần này</span>
+              <span id="stat-dl-week" class="stat-number">1</span>
+            </div>
+            <div class="stat-icon icon-blue">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-title">Thông báo mới</span>
+              <span id="stat-notif-new" class="stat-number">0</span>
+            </div>
+            <div class="stat-icon icon-yellow">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <span class="stat-title">Nguồn đã đồng bộ</span>
+              <span id="stat-synced" class="stat-number">1</span>
+            </div>
+            <div class="stat-icon icon-green">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Column Layout -->
+        <div class="dashboard-grid">
+          <!-- Upcoming Deadlines -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Deadline sắp tới</h3>
+              <button class="btn-link" onclick="switchTab('deadline')">Xem tất cả &rarr;</button>
+            </div>
+            <div id="dash-deadline-list" class="dash-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Recent Notifications -->
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Thông báo mới</h3>
+              <button class="btn-link" onclick="switchTab('notifications')">Xem tất cả &rarr;</button>
+            </div>
+            <div id="dash-notif-list" class="dash-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Documents -->
+        <div class="panel margin-top-lg">
+          <div class="panel-header">
+            <h3>Tài liệu gần đây</h3>
+            <button class="btn-link" onclick="switchTab('documents')">Xem tất cả &rarr;</button>
+          </div>
+          <div id="dash-doc-list" class="dash-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. DEADLINE TAB -->
+      <section id="tab-deadline" class="tab-content">
+        <div class="header-section flex-between">
+          <div>
+            <h2>Deadline & Lịch nộp bài</h2>
+            <p class="sub-date">Quản lý tất cả deadline tự động từ Discord & xem theo Lịch Tuần/Tháng</p>
+          </div>
+          <div class="view-switcher">
+            <button id="btn-view-table" class="btn-toggle active" onclick="switchDeadlineView('table')">&equiv; Bảng</button>
+            <button id="btn-view-calendar" class="btn-toggle" onclick="switchDeadlineView('calendar')">&boxplus; Lịch</button>
+          </div>
+        </div>
+
+        <!-- Filter Category Tabs -->
+        <div class="filter-tabs flex-between">
+          <div>
+            <button class="tab-chip active" onclick="filterDeadlines('all')">Tất cả</button>
+            <button class="tab-chip" onclick="filterDeadlines('today')">Hôm nay</button>
+            <button class="tab-chip" onclick="filterDeadlines('7days')">7 ngày tới</button>
+            <button class="tab-chip" onclick="filterDeadlines('month')">Tháng này</button>
+            <button class="tab-chip" onclick="filterDeadlines('done')">Đã hoàn thành</button>
+            <button class="tab-chip" onclick="filterDeadlines('overdue')">Quá hạn</button>
+          </div>
+          <div id="calendar-mode-controls" class="hidden">
+            <div class="view-switcher">
+              <button id="btn-cal-week" class="btn-toggle active" onclick="switchCalendarMode('week')">Tuần</button>
+              <button id="btn-cal-month" class="btn-toggle" onclick="switchCalendarMode('month')">Tháng</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. Table View -->
+        <div id="deadline-table-container" class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px;">✓</th>
+                <th>Công việc</th>
+                <th>Môn học</th>
+                <th>Deadline</th>
+                <th>Nguồn</th>
+                <th>Trạng thái</th>
+                <th>Độ ưu tiên</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="deadline-table-body">
+              <!-- Inserted dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2. Calendar View -->
+        <div id="deadline-calendar-container" class="table-card hidden" style="padding: 20px;">
+          <div class="calendar-header flex-between margin-bottom-md">
+            <h3 id="calendar-month-title">Tháng 8, 2026</h3>
+            <span style="font-size:0.85rem; color:var(--text-muted);">Bấm vào thẻ Deadline để đánh dấu hoàn thành</span>
+          </div>
+          <div id="calendar-grid" class="calendar-grid">
+            <!-- Calendar grid generated dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. NOTIFICATIONS TAB -->
+      <section id="tab-notifications" class="tab-content">
+        <div class="header-section flex-between">
+          <div>
+            <h2>Thông báo</h2>
+            <p class="sub-date"><span id="unread-count-text">0 thông báo chưa đọc</span></p>
+          </div>
+          <button class="btn btn-secondary" onclick="markAllRead()">Đánh dấu tất cả đã đọc</button>
+        </div>
+
+        <div class="filter-bar">
+          <input type="text" id="notif-search" placeholder="🔍 Tìm kiếm thông báo..." onkeyup="filterNotifications()">
+          <select id="notif-filter-source" onchange="filterNotifications()">
+            <option value="">Tất cả nguồn</option>
+            <option value="Discord">Discord</option>
+          </select>
+          <select id="notif-filter-course" onchange="filterNotifications()">
+            <option value="">Tất cả môn</option>
+            <option value="AI">AI</option>
+            <option value="AI20K Build Phase">AI20K Build Phase</option>
+            <option value="Workshop Kick-off">Workshop Kick-off</option>
+            <option value="Chung">Chung</option>
+          </select>
+        </div>
+
+        <div id="notifications-container" class="cards-stack">
+          <!-- Inserted dynamically -->
+        </div>
+      </section>
+
+      <!-- 4. DOCUMENTS TAB -->
+      <section id="tab-documents" class="tab-content">
+        <div class="header-section">
+          <h2>Tài liệu</h2>
+          <p class="sub-date">AI đã tự động thu thập & lưu trữ các tài liệu từ Discord</p>
+        </div>
+
+        <div class="filter-bar">
+          <input type="text" id="doc-search" placeholder="🔍 Tìm kiếm tài liệu..." onkeyup="filterDocuments()">
+          <select id="doc-filter-source" onchange="filterDocuments()">
+            <option value="">Tất cả nguồn</option>
+            <option value="Discord">Discord</option>
+          </select>
+          <select id="doc-filter-course" onchange="filterDocuments()">
+            <option value="">Tất cả môn</option>
+            <option value="AI">AI</option>
+            <option value="AI20K Build Phase">AI20K Build Phase</option>
+            <option value="Workshop Kick-off">Workshop Kick-off</option>
+          </select>
+        </div>
+
+        <div class="summary-chips">
+          <div class="chip-metric chip-blue"><strong id="total-docs-count">0</strong> Tổng tài liệu</div>
+          <div class="chip-metric chip-purple"><strong id="discord-docs-count">0</strong> Từ Discord</div>
+        </div>
+
+        <div class="table-card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tên tài liệu</th>
+                <th>Môn học</th>
+                <th>Nguồn</th>
+                <th>Ngày cập nhật</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="documents-table-body">
+              <!-- Inserted dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. CHAT AI / INPUT PROCESS TAB -->
+      <section id="tab-chatai" class="tab-content">
+        <div class="header-section flex-between">
+          <div>
+            <h2>Trích xuất AI & Đồng bộ Local Storage</h2>
+            <p class="sub-date">Dán thông báo thô để AI trích xuất Metadata và tự động lưu file storage.json local</p>
+          </div>
+          <button class="btn btn-secondary" onclick="openEvalModal()">Chạy Eval (Golden Set 20)</button>
+        </div>
+
+        <div class="input-card">
+          <label for="raw-input">Dán thông báo thô từ Discord:</label>
+          <textarea id="raw-input" placeholder="Dán thông báo vào đây để chạy Pipeline LLM...&#10;Ví dụ: [Discord #announcements] Thầy vừa mở Assignment 2 môn Machine Learning. Hạn nộp bài là trước 23:59 ngày 15/08/2026."></textarea>
+          
+          <div class="input-actions">
+            <button class="btn btn-primary" onclick="processNewMessage()">
+              🚀 Chạy Pipeline AI & Lưu Local JSON
+            </button>
+          </div>
+        </div>
+
+        <div id="process-result-box" class="margin-top-lg"></div>
+      </section>
+
+      <!-- 6. SETTINGS TAB -->
+      <section id="tab-settings" class="tab-content">
+        <div class="header-section">
+          <h2>Cài đặt Hệ thống</h2>
+          <p class="sub-date">Cấu hình API Key & Đồng bộ Nguồn Dữ liệu</p>
+        </div>
+        <div class="panel">
+          <div class="form-group">
+            <label>API Key Gemini / OpenRouter:</label>
+            <input type="password" id="api-key-input" placeholder="sk-or-v1-... (Đã đọc tự động từ file .env)">
+          </div>
+          <div class="form-group margin-top-md">
+            <label>Đường dẫn Local Storage File:</label>
+            <input type="text" value="codebase/data/storage.json" readonly style="background:#f1f5f9;">
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Notification Detail Modal -->
+  <div id="notif-detail-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <span id="detail-source-badge" class="source-badge badge-discord">Discord</span>
+          <h2 id="detail-title" style="margin-top:8px;">Chi tiết Thông báo</h2>
+          <p class="subtitle" id="detail-subtitle">Môn học: Chung · Vừa xong</p>
+        </div>
+        <button class="btn-close" onclick="closeNotifModal()">&times;</button>
+      </div>
+
+      <!-- Section 1: AI Summary Box -->
+      <div style="background:#eff6ff; padding:16px; border-radius:12px; border:1px solid #bfdbfe; margin-bottom:16px;">
+        <h4 style="color:#1e40af; font-size:0.88rem; font-weight:700; margin-bottom:6px;">🤖 Tóm tắt AI & Metadata:</h4>
+        <div id="detail-ai-summary" style="font-size:0.9rem; color:#1e3a8a; line-height:1.5;">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Section 2: Full Original Content Box -->
+      <div style="margin-bottom:20px;">
+        <h4 style="font-size:0.88rem; font-weight:700; color:var(--text-muted); margin-bottom:8px;">📩 Nội dung tin nhắn nguyên bản đầy đủ:</h4>
+        <div id="detail-content-body" style="background:#f8fafc; padding:20px; border-radius:12px; border:1px solid #e2e8f0; font-size:0.95rem; line-height:1.6; white-space:pre-wrap; max-height:300px; overflow-y:auto; word-break:break-word;">
+          Nội dung thông báo chi tiết
+        </div>
+      </div>
+
+      <div class="flex-between">
+        <button id="detail-mark-read-btn" class="btn btn-secondary" onclick="markSingleReadFromModal()">
+          ✓ Đánh dấu đã đọc
+        </button>
+        <button class="btn btn-primary" onclick="closeNotifModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eval Modal -->
+  <div id="eval-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h2>Đánh giá Chất lượng AI — Golden Set (20 Test Cases)</h2>
+          <p class="subtitle">Quality Bar: <strong style="color:var(--primary);">≥ 85.0% Pass Rate</strong> · R4 Rubric Verification</p>
+        </div>
+        <button class="btn-close" onclick="closeEvalModal()">&times;</button>
+      </div>
+
+      <div class="eval-metrics">
+        <div class="metric-card"><span class="metric-val" id="eval-pass-rate">0.0%</span><span>Pass Rate</span></div>
+        <div class="metric-card"><span class="metric-val" id="eval-passed-count">0/20</span><span>Passed Cases</span></div>
+        <div class="metric-card"><span class="metric-val" id="eval-hallucination-rate">0%</span><span>Hallucination Rate</span></div>
+        <div class="metric-card"><span class="metric-val" id="eval-warning-rate">100%</span><span>Ambiguity Warning Rate</span></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="runAllEval()">Chạy Kiểm thử Trọn bộ 20 Cases</button>
+
+      <div class="table-responsive margin-top-md">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Phân loại Layer</th>
+              <th>Nội dung Input thô</th>
+              <th>Kỳ vọng</th>
+              <th>Kết quả AI</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody id="eval-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
