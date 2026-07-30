@@ -29,6 +29,16 @@
   ],
   "notifications": [
     {
+      "id": "notif-8",
+      "title": "Thông báo nhắc lại lịch Workshop 3",
+      "summary": "BTC xin nhắc lại lịch Workshop 3 sẽ diễn ra vào 20:00 tối nay, ngày 30/07.",
+      "course": "AI20K",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "BTC xin nhắc lại lịch Workshop 3 sẽ diễn ra vào 20:00 tối nay, ngày 30/07.",
+      "is_read": false
+    },
+    {
       "id": "notif-7",
       "title": "WORKSHOP 1: KICK-OFF",
       "summary": "Hẹn gặp tất cả các bạn lúc 20:00 tối nay.",
@@ -100,6 +110,15 @@
     }
   ],
   "documents": [
+    {
+      "id": "doc-4",
+      "name": "Thông báo nhắc lại lịch Workshop 3",
+      "file_type": "LINK",
+      "course": "AI20K",
+      "source": "Discord",
+      "updated_date": "Hôm nay",
+      "url": "#"
+    },
     {
       "id": "doc-3",
       "name": "WORKSHOP 1: KICK-OFF",
