@@ -33,12 +33,8 @@ async function loadAppStorage() {
 }
 
 async function fallbackLocalFetch() {
-  try {
-    const res = await fetch("../data/storage.json");
-    if (res.ok) storageData = await res.json();
-  } catch (e) {
-    console.log("Using memory fallback");
-  }
+  console.log("API Server down, using empty memory fallback");
+  storageData = { stats: {}, deadlines: [], notifications: [], documents: [] };
 }
 
 function renderAllViews() {
@@ -551,7 +547,7 @@ async function processNewMessage() {
   const apiKey = document.getElementById("api-key-input")?.value || "";
 
   const resultBox = document.getElementById("process-result-box");
-  resultBox.innerHTML = `<p style="color:var(--primary); font-weight:700;">🚀 Đang trích xuất Metadata LLM và lưu trữ vào storage.json local...</p>`;
+  resultBox.innerHTML = `<p style="color:var(--primary); font-weight:700;">🚀 Đang trích xuất Metadata LLM và lưu trữ vào Database (PostgreSQL)...</p>`;
 
   try {
     const res = await fetch("http://localhost:8000/api/process-message", {
@@ -566,7 +562,7 @@ async function processNewMessage() {
       renderAllViews();
       resultBox.innerHTML = `
         <div class="panel" style="background:#ecfdf5; border-color:#10b981;">
-          <h4 style="color:#059669;">✅ Đã trích xuất & lưu trữ vào storage.json thành công!</h4>
+          <h4 style="color:#059669;">✅ Đã trích xuất & lưu trữ vào Database thành công!</h4>
           <pre style="font-size:0.8rem; margin-top:8px;">${JSON.stringify(responseData.extracted, null, 2)}</pre>
         </div>
       `;

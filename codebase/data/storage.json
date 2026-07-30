@@ -13,7 +13,7 @@
       "due_date": "2026-07-30 23:59",
       "due_relative": "Sắp tới",
       "source": "Discord",
-      "status": "Đang làm",
+      "status": "Hoàn thành",
       "priority": "HIGH"
     },
     {
@@ -23,7 +23,7 @@
       "due_date": "2026-08-15 23:59",
       "due_relative": "Sắp tới",
       "source": "Discord",
-      "status": "Đang làm",
+      "status": "Hoàn thành",
       "priority": "HIGH"
     }
   ],
