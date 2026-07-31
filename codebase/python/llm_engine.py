@@ -35,6 +35,51 @@ class DeadlineExtractionResult(BaseModel):
 from datetime import datetime, timedelta
 import re
 
+# Thứ trong tuần: datetime.weekday() trả Monday=0 ... Sunday=6
+_WEEKDAY_VI = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"]
+
+def _now_str() -> str:
+    """Mốc thời gian hiện tại đưa vào prompt.
+
+    KHÔNG đặt ký tự có dấu trong format string của strftime: trên Windows strftime
+    đi qua locale codec (cp1258) và ném UnicodeEncodeError, khiến lời gọi LLM chết
+    trước khi kịp gửi request rồi bị except nuốt mất -> âm thầm rơi về local parser.
+    """
+    n = datetime.now()
+    return f"{n.strftime('%Y-%m-%d %H:%M')} ({_WEEKDAY_VI[n.weekday()]})"
+
+
+_RESOURCE_HINTS = ["http://", "https://", "docs.google", "drive.google", "slide", "tài liệu"]
+
+def _normalize_extraction(res: Dict[str, Any], raw_text: str) -> Dict[str, Any]:
+    """Chuẩn hoá output của LLM về đúng contract mà discord_bot.py / storage_manager.py trông đợi.
+
+    LLM hay trả thiếu field hoặc sai thang đo; discord_bot.py lọc tin bằng
+    is_deadline / is_relevant_announcement / is_course_resource nên field thiếu (None)
+    sẽ khiến tin bị bỏ qua oan.
+    """
+    for flag in ("is_deadline", "is_relevant_announcement", "is_course_resource", "out_of_scope"):
+        res[flag] = bool(res.get(flag))
+
+    # confidence: một số model trả thang 0-1, embed lại hiển thị dạng phần trăm
+    try:
+        conf = float(res.get("confidence") or 0)
+    except (TypeError, ValueError):
+        conf = 0.0
+    res["confidence"] = round(conf * 100, 1) if conf <= 1 else round(conf, 1)
+
+    lower = raw_text.lower()
+    if any(k in lower for k in _RESOURCE_HINTS):
+        res["is_course_resource"] = True
+        res["is_relevant_announcement"] = True
+        if not res.get("title"):
+            res["title"] = "Tài liệu môn học"
+
+    res.setdefault("priority", "MEDIUM")
+    if not res.get("quote"):
+        res["quote"] = raw_text[:150]
+    return res
+
 def extract_deadline_local(raw_text: str) -> Dict[str, Any]:
     """Engine xử lý AI local linh hoạt: Phân loại thông báo quan trọng vs Tin rác trò chuyện"""
     lower = raw_text.lower()
@@ -137,7 +182,7 @@ def extract_deadline_openrouter(raw_text: str, api_key: str = None, model: str =
 
     chosen_model = model or os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
     url = "https://openrouter.ai/api/v1/chat/completions"
-    current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M (Thứ %w)")
+    current_time_str = _now_str()
 
     headers = {
         "Authorization": f"Bearer {key}",
@@ -184,14 +229,7 @@ Trả về duy nhất 1 JSON object chuẩn chứa các trường bắt buộc s
         res_json = json.loads(content)
         
         # Bổ sung hậu xử lý an toàn nếu LLM thiếu field
-        lower = raw_text.lower()
-        if any(k in lower for k in ["http://", "https://", "docs.google", "drive.google", "slide", "tài liệu"]):
-            res_json["is_course_resource"] = True
-            res_json["is_relevant_announcement"] = True
-            if not res_json.get("title"):
-                res_json["title"] = "Tài liệu môn học"
-
-        return res_json
+        return _normalize_extraction(res_json, raw_text)
     except Exception as e:
         print(f"⚠️ Gọi OpenRouter API thất bại ({e}). Tự động dùng Local Parser...")
         return extract_deadline_local(raw_text)
@@ -210,8 +248,9 @@ def extract_deadline_gemini(raw_text: str, api_key: str = None) -> Dict[str, Any
         return extract_deadline_local(raw_text)
 
     try:
-        current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M (Thứ %w)")
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={key}"
+        current_time_str = _now_str()
+        gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:generateContent?key={key}"
         
         prompt = f"""
 Bạn là Trợ lý AI chuyên trích xuất thông tin Deadline và Lịch học từ thông báo thô.
@@ -223,15 +262,18 @@ Nội dung thông báo thô:
 
 Cấu trúc JSON bắt buộc (KHÔNG thêm markdown hay chữ thừa):
 {{
-  "is_deadline": boolean,
-  "out_of_scope": boolean,
-  "course": string hoặc null,
-  "title": string hoặc null,
-  "due_date": string hoặc null (định dạng YYYY-MM-DD HH:mm),
+  "is_deadline": boolean (true nếu có thông tin về bài tập/quiz/thi/hạn nộp bài),
+  "is_relevant_announcement": boolean (true nếu là thông báo chính thức từ thầy cô/lớp học/workshop/thay đổi lịch),
+  "is_course_resource": boolean (true nếu chứa link tài liệu, slide, drive, google docs, presentation, file đính kèm),
+  "out_of_scope": boolean (CHỈ true khi người dùng xin gia hạn, xin nghỉ, hoặc nhờ giải hộ bài tập.
+      Tin nhắn tán gẫu không liên quan KHÔNG phải out_of_scope — để tất cả cờ boolean là false),
+  "course": string hoặc null (Tên môn học hoặc tên Workshop/Lớp học),
+  "title": string hoặc null (Tiêu đề ngắn gọn của thông báo hoặc tài liệu),
+  "due_date": string hoặc null (định dạng YYYY-MM-DD HH:mm, null nếu không có deadline),
   "priority": "HIGH" | "MEDIUM" | "LOW",
-  "confidence": number,
-  "warning_flag": string hoặc null,
-  "quote": string
+  "confidence": number nguyên từ 0 đến 100 (KHÔNG dùng thang 0-1),
+  "warning_flag": string hoặc null (chỉ dùng 1 trong: MISSING_EXACT_DATE | CONVERTED_FROM_UTC | OUT_OF_SCOPE | NO_RELEVANCE),
+  "quote": string (trích dẫn nguyên văn câu gốc)
 }}
 """
 
@@ -245,7 +287,7 @@ Cấu trúc JSON bắt buộc (KHÔNG thêm markdown hay chữ thừa):
 
         data = response.json()
         json_str = data["candidates"][0]["content"]["parts"][0]["text"]
-        return json.loads(json_str)
+        return _normalize_extraction(json.loads(json_str), raw_text)
     except Exception as e:
         print(f"⚠️ Gọi Gemini API thất bại ({e}). Tự động dùng Local Parser...")
         return extract_deadline_local(raw_text)

@@ -10,6 +10,22 @@ from typing import Dict, Any, List
 
 STORAGE_FILE = os.path.join(os.path.dirname(__file__), "..", "data", "storage.json")
 
+def _next_id(items: List[Dict[str, Any]], prefix: str) -> str:
+    """Sinh ID kế tiếp dựa trên số LỚN NHẤT đang dùng, không dựa vào len().
+
+    `f"{prefix}-{len(items) + 1}"` sinh ID trùng ngay khi danh sách có lỗ hổng
+    (một item bị xoá, hoặc data seed sẵn khuyết số). ID trùng khiến
+    `storageData.notifications.find(n => n.id === id)` trong app.js luôn trả về
+    bản ghi ĐẦU TIÊN -> bấm "Xem chi tiết" mở ra nhầm thông báo, và
+    mark_notification_read() cũng đánh dấu nhầm bản ghi.
+    """
+    max_n = 0
+    for it in items:
+        m = re.match(r"^%s-(\d+)$" % re.escape(prefix), str(it.get("id") or ""))
+        if m:
+            max_n = max(max_n, int(m.group(1)))
+    return f"{prefix}-{max_n + 1}"
+
 def load_storage() -> Dict[str, Any]:
     """Đọc dữ liệu từ file storage.json"""
     if not os.path.exists(STORAGE_FILE):
@@ -76,7 +92,7 @@ def add_extracted_item(extracted_data: Dict[str, Any], source: str = "Discord") 
             return {"notification": n, "is_duplicate": True}
 
     # 1. Thêm Notification mới nếu chưa tồn tại
-    notif_id = f"notif-{len(existing_notifs) + 1}"
+    notif_id = _next_id(existing_notifs, "notif")
     new_notif = {
         "id": notif_id,
         "title": title,
@@ -96,7 +112,7 @@ def add_extracted_item(extracted_data: Dict[str, Any], source: str = "Discord") 
         existing_dls = storage.get("deadlines", [])
         dl_exists = any(d.get("title", "").lower().strip() == title_norm for d in existing_dls)
         if not dl_exists:
-            dl_id = f"dl-{len(existing_dls) + 1}"
+            dl_id = _next_id(existing_dls, "dl")
             new_deadline = {
                 "id": dl_id,
                 "title": title,
@@ -116,7 +132,7 @@ def add_extracted_item(extracted_data: Dict[str, Any], source: str = "Discord") 
         existing_docs = storage.get("documents", [])
         doc_exists = any(d.get("name", "").lower().strip() == title_norm for d in existing_docs)
         if not doc_exists:
-            doc_id = f"doc-{len(existing_docs) + 1}"
+            doc_id = _next_id(existing_docs, "doc")
             
             new_doc = {
                 "id": doc_id,

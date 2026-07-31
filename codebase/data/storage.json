@@ -29,6 +29,26 @@
   ],
   "notifications": [
     {
+      "id": "notif-10",
+      "title": "Cập nhật slide vlearn và hỗ trợ học tập",
+      "summary": "Data về slide vlearn đã được up lên repo nhá mọi người, các team clone về để sử dụng nhaaaa. Chiều nay các team ngồi phò",
+      "course": "VinUni-AI20k",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Data về slide vlearn đã được up lên repo nhá mọi người, các team clone về để sử dụng nhaaaa. Chiều nay các team ngồi phòng lý thuyết vẫn có các bạn labcoach, vlearn, chatbot đi hỗ trợ từng phòng nhá.",
+      "is_read": false
+    },
+    {
+      "id": "notif-9",
+      "title": "Thông báo mới",
+      "summary": "Hello",
+      "course": "Chung",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Hello",
+      "is_read": false
+    },
+    {
       "id": "notif-8",
       "title": "Thông báo nhắc lại lịch Workshop 3",
       "summary": "BTC xin nhắc lại lịch Workshop 3 sẽ diễn ra vào 20:00 tối nay, ngày 30/07.",
@@ -49,7 +69,7 @@
       "is_read": false
     },
     {
-      "id": "notif-8",
+      "id": "notif-11",
       "title": "Thông báo lựa chọn đề tài",
       "summary": "Thứ Năm, ngày 30/07/2026: Hạn cuối lựa chọn và đăng ký đề tài.",
       "course": "Chung",
@@ -110,6 +130,15 @@
     }
   ],
   "documents": [
+    {
+      "id": "doc-5",
+      "name": "Cập nhật slide vlearn và hỗ trợ học tập",
+      "file_type": "LINK",
+      "course": "VinUni-AI20k",
+      "source": "Discord",
+      "updated_date": "Hôm nay",
+      "url": "#"
+    },
     {
       "id": "doc-4",
       "name": "Thông báo nhắc lại lịch Workshop 3",
