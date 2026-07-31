@@ -1,4 +1,4 @@
-# AI SPEC — Trích xuất & Cảnh báo Deadline tự động từ Discord & Outlook · Nhóm 03 · Zone 1
+# AI SPEC — Trích xuất & Cảnh báo Deadline tự động từ Discord & Outlook · Nhóm 404 · Zone 5
 Hướng: [ ] A — VLearn  [ ] B — Trợ lý Học viên  [X] C — Làn mở
 Loại: [X] Tối ưu tính năng có sẵn  [X] Tính năng mới
 

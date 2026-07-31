@@ -1,4 +1,4 @@
-¬# Danh Sách Thành Viên Nhóm (Teammates) — Batch 03 | Zone 5 - Nhóm 404
+# Danh Sách Thành Viên Nhóm (Teammates) | Zone 5 - Nhóm 404
 
 | STT | Mã Học Viên (MSSV) | Họ và Tên | Vai trò chính trong dự án |
 |:---:|:---|:---|:---|

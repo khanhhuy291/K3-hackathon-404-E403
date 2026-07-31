@@ -1,4 +1,4 @@
-# Mini Hackathon AI — Batch 03 | Zone 1 - Nhóm 03
+# Mini Hackathon AI | Zone 5 - Nhóm 403
 
 ## Dự án: Trợ lý Trích xuất & Cảnh báo Deadline Tự động từ Discord & Outlook
 
