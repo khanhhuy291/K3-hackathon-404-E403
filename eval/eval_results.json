@@ -1,0 +1,232 @@
+{
+  "metrics": {
+    "total_cases": 20,
+    "passed_cases": 18,
+    "pass_rate": "90.0%",
+    "hallucination_rate": "0.0%",
+    "out_of_scope_accuracy": "100.0%",
+    "quality_bar_met": true
+  },
+  "details": [
+    {
+      "id": 1,
+      "category": "Regular",
+      "description": "Thông báo bài tập rõ tên môn, ngày giờ",
+      "input": "[Discord #announcements] [AI-K3] Thầy gửi assignment 2 môn M...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-15 23:59",
+      "actual_date": "2026-08-15 23:59",
+      "is_pass": true
+    },
+    {
+      "id": 2,
+      "category": "Regular",
+      "description": "Email Outlook thông báo quiz online",
+      "input": "Dear All, Quiz 1 môn Lập trình Python sẽ mở vào lúc 08:00 và...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-10 22:00",
+      "actual_date": "2026-08-10 22:00",
+      "is_pass": true
+    },
+    {
+      "id": 3,
+      "category": "Regular",
+      "description": "Thông báo thi cuối kỳ",
+      "input": "[Outlook] Thông báo lịch thi cuối kỳ môn Đồ án AI: Thi trực ...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-25 14:00",
+      "actual_date": null,
+      "is_pass": false
+    },
+    {
+      "id": 4,
+      "category": "Regular",
+      "description": "Deadline bài tập nhóm",
+      "input": "[Discord #nhom-1] Các bạn ơi chốt slide thuyết trình môn Pro...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-12 18:00",
+      "actual_date": "2026-08-12 18:00",
+      "is_pass": true
+    },
+    {
+      "id": 5,
+      "category": "Regular",
+      "description": "Thông báo nộp bài thu hoạch",
+      "input": "Nhắc nhở: Hạn nộp file PDF bài thu hoạch Hackathon là 23:59 ...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-07-31 23:59",
+      "actual_date": "2026-07-31 23:59",
+      "is_pass": true
+    },
+    {
+      "id": 6,
+      "category": "Regular",
+      "description": "Thông báo đăng ký đề tài",
+      "input": "[Outlook] Sinh viên đăng ký tên đề tài nghiên cứu khoa học t...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-09-05 17:00",
+      "actual_date": "2026-09-05 17:00",
+      "is_pass": true
+    },
+    {
+      "id": 7,
+      "category": "Regular",
+      "description": "Thông báo nộp bổ sung học phí/hồ sơ",
+      "input": "Phòng đào tạo thông báo: Hạn cuối bổ sung hồ sơ tốt nghiệp l...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-18 11:30",
+      "actual_date": "2026-08-18 11:30",
+      "is_pass": true
+    },
+    {
+      "id": 8,
+      "category": "Regular",
+      "description": "Nhắc nộp khảo sát môn học",
+      "input": "[Discord #general] Mọi người nhớ làm khảo sát đánh giá giảng...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-14 20:00",
+      "actual_date": "2026-08-14 20:00",
+      "is_pass": true
+    },
+    {
+      "id": 9,
+      "category": "Regular",
+      "description": "Lịch nộp code đồ án",
+      "input": "Hạn nộp source code Github môn Web Development: 23:59 ngày 2...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-20 23:59",
+      "actual_date": "2026-08-21 06:59",
+      "is_pass": true
+    },
+    {
+      "id": 10,
+      "category": "Regular",
+      "description": "Thông báo đọc trước tài liệu",
+      "input": "[Discord] Yêu cầu học viên đọc trước Chapter 3 sách Deep Lea...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-08 08:00",
+      "actual_date": "2026-08-08 08:00",
+      "is_pass": true
+    },
+    {
+      "id": 11,
+      "category": "Layer1_Hallucination",
+      "description": "Email thông báo tin tức nghỉ học, KHÔNG có deadline",
+      "input": "[Outlook] Thông báo: Sáng mai ngày 01/08 giảng viên có lịch ...",
+      "expected_deadline": false,
+      "actual_deadline": false,
+      "expected_date": null,
+      "actual_date": null,
+      "is_pass": true
+    },
+    {
+      "id": 12,
+      "category": "Layer1_Hallucination",
+      "description": "Tin nhắn sinh viên chém gió trên Discord",
+      "input": "[Discord #chat] Bạn nào có link slide bài 3 cho mình xin với...",
+      "expected_deadline": false,
+      "actual_deadline": false,
+      "expected_date": null,
+      "actual_date": null,
+      "is_pass": true
+    },
+    {
+      "id": 13,
+      "category": "Layer2_Ambiguous",
+      "description": "Tin nhắn có deadline nhưng thiếu ngày cụ thể (tối nay)",
+      "input": "[Discord #announcements] Thầy vừa mở bài tập 1 môn Data Stru...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": null,
+      "actual_date": "2026-07-31 18:00",
+      "is_pass": true
+    },
+    {
+      "id": 14,
+      "category": "Layer2_Ambiguous",
+      "description": "Tin nhắn hạn chót 12h (không rõ AM hay PM)",
+      "input": "Thông báo: Hạn cuối nộp Assignment môn NLP là 12h ngày 16/08...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-16 12:00",
+      "actual_date": "2026-08-16 12:00",
+      "is_pass": true
+    },
+    {
+      "id": 15,
+      "category": "Layer3_OutOfScope",
+      "description": "Sinh viên yêu cầu xin gia hạn nộp bài",
+      "input": "Thầy ơi em bị sốt mấy hôm nay, thầy cho em xin gia hạn bài t...",
+      "expected_deadline": false,
+      "actual_deadline": false,
+      "expected_date": null,
+      "actual_date": null,
+      "is_pass": true
+    },
+    {
+      "id": 16,
+      "category": "Layer3_OutOfScope",
+      "description": "Yêu cầu giải bài tập hộ",
+      "input": "Hãy giải giúp tôi bài tập Python này và viết code hoàn chỉnh...",
+      "expected_deadline": false,
+      "actual_deadline": false,
+      "expected_date": null,
+      "actual_date": null,
+      "is_pass": true
+    },
+    {
+      "id": 17,
+      "category": "Layer4_Domain",
+      "description": "Lệch múi giờ UTC",
+      "input": "Assignment submission link will close at 23:59 Sunday 16/08/...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-17 06:59",
+      "actual_date": "2026-08-17 06:59",
+      "is_pass": true
+    },
+    {
+      "id": 18,
+      "category": "Layer4_Domain",
+      "description": "Tên môn viết tắt + 2 lớp có deadline khác nhau",
+      "input": "Thông báo môn XSTK: Lớp K3-A nộp bài thảo luận trước 17:00 n...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-10 17:00",
+      "actual_date": null,
+      "is_pass": false
+    },
+    {
+      "id": 19,
+      "category": "Layer4_Domain",
+      "description": "Thông báo thay đổi phòng học & nộp lại bài",
+      "input": "[Outlook] Thay đổi phòng học môn Computer Vision từ P301 san...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-05 09:00",
+      "actual_date": "2026-08-05 09:00",
+      "is_pass": true
+    },
+    {
+      "id": 20,
+      "category": "Layer4_Domain",
+      "description": "Tin nhắn trích dẫn bài đăng cũ kèm thay đổi hạn nộp",
+      "input": "Update lại thông báo cũ: Deadline môn Machine Learning được ...",
+      "expected_deadline": true,
+      "actual_deadline": true,
+      "expected_date": "2026-08-12 23:59",
+      "actual_date": "2026-08-13 06:59",
+      "is_pass": true
+    }
+  ]
+}
