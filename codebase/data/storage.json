@@ -7,6 +7,16 @@
   },
   "deadlines": [
     {
+      "id": "dl-3",
+      "title": "Nhắc nhở Mentor Duty",
+      "course": "t-081",
+      "due_date": "2026-08-03 12:00",
+      "due_relative": "Sắp tới",
+      "source": "Discord",
+      "status": "Đang làm",
+      "priority": "HIGH"
+    },
+    {
       "id": "dl-2",
       "title": "Thông báo lựa chọn đề tài",
       "course": "Chung",
@@ -28,6 +38,16 @@
     }
   ],
   "notifications": [
+    {
+      "id": "notif-9",
+      "title": "Nhắc nhở Mentor Duty",
+      "summary": "Deadline: 12:00 Thứ 4, Thứ 7.",
+      "course": "t-081",
+      "source": "Discord",
+      "time_relative": "Vừa xong",
+      "content": "Deadline: 12:00 Thứ 4, Thứ 7.",
+      "is_read": false
+    },
     {
       "id": "notif-8",
       "title": "Thông báo nhắc lại lịch Workshop 3",
